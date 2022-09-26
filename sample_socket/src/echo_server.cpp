@@ -46,7 +46,7 @@ static int initServer( const char* ip, int port, struct sockaddr_in* addr ) {
     bzero(addr, addr_size);
     addr->sin_family = AF_INET;
     addr->sin_port = htons(port); // ポート。ホストからネットワークへのバイトオーダー変換
-    addr->sin_addr.s_addr = inet_addr("127.0.0.1");
+    addr->sin_addr.s_addr = inet_addr(ip);
 
     if (bind(sock, (struct sockaddr*)addr, addr_size) == -1) {
         perror("bind");
