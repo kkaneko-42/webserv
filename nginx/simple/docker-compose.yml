@@ -1,0 +1,10 @@
+version: '3.10'
+
+services:
+  nginx:
+    image: nginx
+    volumes:
+      - ./conf:/etc/nginx/conf.d
+      - ./html:/var/www/html
+    ports:
+      - 8080:80
