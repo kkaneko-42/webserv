@@ -26,7 +26,7 @@ int main( void ) {
     // listen_sdを、non-blockingなfdにする
     // これをしないと、acceptIncomingConnections()ができない
     // なぜなら、待機キューが空の時のacceptが接続を待機してしまう(所謂blocking??)
-    fcntl(listen_sd, F_SETFL, O_NONBLOCK); 
+    fcntl(listen_sd, F_SETFL, O_NONBLOCK);
 
     // init fds
     bzero(fds, sizeof(fds));
