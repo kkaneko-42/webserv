@@ -55,13 +55,24 @@ typedef struct LocationInfo {
     std::set<std::string>   allow_cgi_extensions;
 
     // TODO: 初期化する
-    struct LocationInfo() {
-    }
+    struct LocationInfo()
+    : root(""), allow_methods(std::set<std::string>), return_path(""),
+    autoindex(false), index(""), allow_file_upload(false), save_folder(""),
+    allow_cgi_extensions("")
+    {}
 }   LocationInfo;
 
 typedef struct ServerInfo {
     // listen
-    struct {int port, std::string addr} listen;
+    struct { int port, std::string addr } listen;
+    int setListen( const std::string& addr_and_port ) {
+        std::string::size_type colon_pos;
+
+        colon_pos = addr_and_port.find(":");
+        if (colon_pos == std::string::npos) {
+            addr = "0.0.0.0";
+        }
+    }
     
     // server_name
     std::string server_name;
@@ -77,27 +88,32 @@ typedef struct ServerInfo {
     std::map<std::string, LocationInfo> locations_info_map;
 
     // TODO: 初期化する
-    struct ServerInfo() {   
-    }
-} ServerInfo;
+    struct ServerInfo()
+    : listen({4242, "0.0.0.0"}), server_name(""), client_max_body_size(-1),
+    error_pages_map(std::map<int, std::string>()),
+    locations_info_map(std::map<std::string, LocationInfo>())
+    {}
+}   ServerInfo;
 
-class Config
-{
+class Config {
     public:
-        debugConfig();
-        parse();
+        void debugConfig( void );
+        int parse( const std::string& filepath );
     
     private:
+        int addServerInfo( const std::string& directive );
+        int parseError( int status );
         std::vector<ServerInfo> serversInfo;
 };
-
+/*
 class Server {
     public:
-        Server(const ServerInfo &serverInfo);
+        Server( const ServerInfo &serverInfo );
 
     private:
         int sd_;
         ServerInfo conf_;
 };
+*/
 
 #endif
