@@ -79,7 +79,6 @@ int Config::server_conf(
         // now: "it->str == {"
         ++it;
         while (it->str != "}") {
-            std::cout << "it->str: " << it->str << std::endl;
             if (location_conf(tokens, it, location_path)) {
                 return (1);
             }

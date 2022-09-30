@@ -1,0 +1,39 @@
+it->str: root
+it->str: allow_methods
+it->str: return
+it->str: autoindex
+it->str: index
+it->str: allow_file_upload
+it->str: save_folder
+it->str: allow_cgi_extensions
+it->str: root
+it->str: index
+====== server [0] ============
+listen: 0.0.0.0:4242
+server_name: example.com
+client_max_body_size: 42
+error_pages_map: {
+400 : /40x.html,
+401 : /40x.html,
+402 : /40x.html,
+403 : /40x.html,
+404 : /40x.html,
+}
+@@@ location / info @@@
+  root: ./html
+  allow_methods: [GET, POST, DELETE, ]
+  return_path: https://www.google.com/
+  autoindex: true
+  index: index.html
+  allow_file_upload: false
+  save_folder: ./upload
+  allow_cgi_extensions: [py, sh, ]
+@@@ location /hoge/ info @@@
+  root: ./html/hoge
+  allow_methods: []
+  return_path: 
+  autoindex: false
+  index: index.html
+  allow_file_upload: false
+  save_folder: 
+  allow_cgi_extensions: []
