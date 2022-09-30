@@ -1,5 +1,5 @@
 test: all
-	./a.out ./conf/sample.conf
+	./a.out ./conf/sample2.conf
 
 all:
 	c++ parser.cpp Config.cpp lexer.cpp test_main.cpp

@@ -36,7 +36,7 @@ int Config::server(
     // now: it->str == "{"
     ++it;
     serversInfo.push_back(ServerInfo());
-    while (it < tokens.end()) {
+    while (it->str != "}") {
         if (server_conf(tokens, it)) {
             return (1);
         }
