@@ -1,13 +1,12 @@
 #include "Config.hpp"
 #include <fstream>
+#include <cctype>
+#include <iostream>
 
 static int loadFile( const std::string& filepath, std::string& content );
-static int splitDirective(
+int lexer(
     const std::string& file_content,
-    std::vector<std::string>& buffer,
-    std::string::size_type pos = 0
-);
-static std::vector<std::string> splitString( std::string &str, std::string delim );
+    std::vector<std::string>& tokens );
 
 int Config::parse( const std::string& filepath ) {
     // load config file
@@ -16,41 +15,65 @@ int Config::parse( const std::string& filepath ) {
         return (parseError(1));
     }
 
-    // split directive
-    std::vector<std::string> server_directives;
-    if (splitDirective(file_content, server_directives)) {
+    // lexical analyze
+    std::vector<Token> tokens;
+    if (lexer(file_content, tokens)) {
         return (parseError(1));
     }
 
-    // create servers info
-    for (size_t i = 0; i < server_directives.size(); ++i) {
-        if (addServerInfo(server_directives[i])) {
-            return (parseError(1));
-        }
+    // execute parse
+    if (this->doParse(tokens)) {
+        return (parseError(1));
     }
 
     return (0);
-}
-
-int Config::addServerInfo( const std::string& directive ) {
-    ServerInfo info;
-    std::map<std::string, std::string> conf_named;
-
-    if (parseDirective(directive, conf_named)) {
-        return (1);
-    }
-
-    std::map<std::string, std::string>::iterator it;
-    for (it = tokens.begin(); it < tokens.end(); ++it) {
-    }
-
-    serversInfo.push_back(info);
 }
 
 int Config::parseError( int status ) {
     std::cerr << "parse error" << std::endl;
     serversInfo.clear();
     return (status);
+}
+
+template <typename T>
+static void printVector(std::vector<T> v) {
+    std::cout << "[";
+    for (size_t i = 0; i < v.size(); i++) {
+        std::cout << v[i] << ", ";
+    }
+    std::cout << "]" << std::endl;
+}
+
+void Config::debugConfig( void ) {
+    size_t i = 0;
+    std::vector<ServerInfo>::iterator it;
+    for (it = serversInfo.begin(); it < serversInfo.end(); ++it, ++i) {
+        std::cout << "====== server [" << i << "] ============" << std::endl;
+        std::cout << "listen: " << it->listen.addr << ":" << it->listen.port << std::endl;
+        std::cout << "server_name: " << it->server_name << std::endl;
+        std::cout << "client_max_body_size: " << it->client_max_body_size << std::endl;
+        std::cout << "error_pages_map: {" << std::endl;
+        std::map<int, std::string>::iterator it2;
+        for (it2 = it->error_pages_map.begin(); it2 != it->error_pages_map.end(); ++it2) {
+            std::cout << it2->first << " : " << it2->second << "," << std::endl;
+        }
+        std::cout << "}" << std::endl;
+        std::map<std::string, LocationInfo>::iterator it3;
+        for (it3 = it->locations_info_map.begin(); it3 != it->locations_info_map.end(); ++it3) {
+            std::cout << "@@@ location " << it3->first << " info @@@" << std::endl;
+            LocationInfo info = it3->second;
+            std::cout << "  root: " << info.root << std::endl;
+            std::cout << "  allow_methods: ";
+            printVector(info.allow_methods);
+            std::cout << "  return_path: " << info.return_path << std::endl;
+            std::cout << "  autoindex: " << ((info.autoindex) ? "true" : "false") << std::endl;
+            std::cout << "  index: " << info.index << std::endl;
+            std::cout << "  allow_file_upload: " << ((info.allow_file_upload) ? "true" : "false") << std::endl;
+            std::cout << "  save_folder: " << info.save_folder << std::endl;
+            std::cout << "  allow_cgi_extensions: ";
+            printVector(info.allow_cgi_extensions);
+        }
+    }
 }
 
 static int loadFile( const std::string& filepath, std::string& content ) {
@@ -68,49 +91,4 @@ static int loadFile( const std::string& filepath, std::string& content ) {
     }
 
     return (0);
-}
-
-static int parseDirective(
-    const std::string& directive,
-    std::map<std::string, std::string> conf_named
-) {
-
-}
-
-// input: config file content
-// output: array of directives content
-static int splitDirective(
-    const std::string& file_content,
-    std::vector<std::string>& buffer,
-    std::string::size_type pos = 0
-) {
-    const char directive_begin = '{', directive_end = '}';
-    bool is_in_directive = false, is_in_sub_directive = false;
-    std::string::size_type begin_pos, end_pos;
-    
-    for (std::string::size_type i = 0; i < file_content.size(); ++i) {
-        if (file_content[i] == directive_end) {
-            if (is_in_sub_directive) {
-                is_in_sub_directive = false;
-            } else {
-                buffer.push_back(file_content.substr(begin_pos, i - begin_pos));
-                is_in_directive = false;
-            }
-        }
-        
-        if (file_content[i] == directive_begin) {
-            if (is_in_directive) {
-                is_in_sub_directive = true;
-            } else {
-                is_in_directive = true;
-                begin_pos = i + 1; // NOTE: possibly segv
-            }
-        }
-    }
-
-    if (is_in_directive || is_in_sub_directive) {
-        return (1);
-    } else {
-        return (0);
-    }
 }

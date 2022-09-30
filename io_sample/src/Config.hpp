@@ -30,8 +30,8 @@ server {
     }
 
     location /hoge/ {
-        root ./html/hoge
-        index index.html
+        root ./html/hoge;
+        index index.html;
     }
 }
 
@@ -44,35 +44,29 @@ server {
 }
 */
 
-typedef struct LocationInfo {
-    std::string             root;
-    std::set<std::string>   allow_methods;
-    std::string             return_path;
-    bool                    autoindex;
-    std::string             index;
-    bool                    allow_file_upload;
-    std::string             save_folder;
-    std::set<std::string>   allow_cgi_extensions;
+struct LocationInfo {
+    std::string                 root;
+    std::vector<std::string>    allow_methods;
+    std::string                 return_path;
+    bool                        autoindex;
+    std::string                 index;
+    bool                        allow_file_upload;
+    std::string                 save_folder;
+    std::vector<std::string>    allow_cgi_extensions;
 
+    /*
     // TODO: 初期化する
-    struct LocationInfo()
-    : root(""), allow_methods(std::set<std::string>), return_path(""),
+    LocationInfo()
+    : root(""), allow_methods(std::set<std::string>()), return_path(""),
     autoindex(false), index(""), allow_file_upload(false), save_folder(""),
-    allow_cgi_extensions("")
+    allow_cgi_extensions(std::vector<std::string>())
     {}
-}   LocationInfo;
+    */
+};
 
-typedef struct ServerInfo {
+struct ServerInfo {
     // listen
-    struct { int port, std::string addr } listen;
-    int setListen( const std::string& addr_and_port ) {
-        std::string::size_type colon_pos;
-
-        colon_pos = addr_and_port.find(":");
-        if (colon_pos == std::string::npos) {
-            addr = "0.0.0.0";
-        }
-    }
+    struct { int port; std::string addr; } listen;
     
     // server_name
     std::string server_name;
@@ -87,21 +81,56 @@ typedef struct ServerInfo {
     //  => key: location path
     std::map<std::string, LocationInfo> locations_info_map;
 
+    /*
     // TODO: 初期化する
-    struct ServerInfo()
-    : listen({4242, "0.0.0.0"}), server_name(""), client_max_body_size(-1),
+    ServerInfo()
+    : listen({0, "0.0.0.0"}), server_name(""), client_max_body_size(-1),
     error_pages_map(std::map<int, std::string>()),
     locations_info_map(std::map<std::string, LocationInfo>())
     {}
-}   ServerInfo;
+    */
+};
 
 class Config {
     public:
+        enum TokenType {
+            WORD,
+            OP
+        };
+
+        struct Token {
+            std::string str;
+            TokenType type;
+        };
+
         void debugConfig( void );
+        int lexer(
+            std::string& file_content,
+            std::vector<Token>& tokens );
+        /* BNF Rules */
+        int conf(
+            const std::vector<Token>& tokens,
+            std::vector<Token>::const_iterator& it );
+        int server(
+            const std::vector<Token>& tokens,
+            std::vector<Token>::const_iterator& it );
+        int server_conf(
+            const std::vector<Token>& tokens,
+            std::vector<Token>::const_iterator& it );
+        int listen_conf(
+            const std::vector<Token>& tokens,
+            std::vector<Token>::const_iterator& it );
+        int error_page_conf(
+            const std::vector<Token>& tokens,
+            std::vector<Token>::const_iterator& it );
+        int location_conf(
+            const std::vector<Token>& tokens,
+            std::vector<Token>::const_iterator& it,
+            const std::string& location_path );
         int parse( const std::string& filepath );
-    
+
     private:
-        int addServerInfo( const std::string& directive );
+        int doParse( const std::vector<Token>& tokens );
         int parseError( int status );
         std::vector<ServerInfo> serversInfo;
 };
