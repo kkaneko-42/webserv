@@ -19,6 +19,7 @@ class HttpRequest {
         };
 
         HttpRequest( const std::string& request );
+        std::string getPath( void ) const { return path_; }
         void printRequest( void ) const;
     private:
         int parse( const std::string& request );

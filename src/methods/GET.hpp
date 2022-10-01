@@ -2,6 +2,7 @@
 #define HTTP_METHOD_GET_HPP
 
 #include "HttpMethod.hpp"
+#include "../utils/utils.hpp"
 
 class GET : public HttpMethod {
     public:

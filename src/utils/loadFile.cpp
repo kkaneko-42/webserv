@@ -1,6 +1,5 @@
 #include "utils.hpp"
 
-
 std::string loadFile( const std::string& path ) {
     std::string res = "", buf = "";
     std::ifstream ifs(path.c_str());
