@@ -39,7 +39,8 @@ class Server {
         int createSocket( void ) const;
         void bindSocket( int sock, const ServerInfo& info ) const;
         void listenSocket( int sock ) const;
-        void addSocketDescriptor( int sock, short events );
+        void registerDescriptor( int sock, short events );
+        void deleteClosedDescriptor( void );
         std::vector<Event*> waitForEvents( void );
         std::vector<Event*> getRaisedEvents( void );
 

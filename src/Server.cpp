@@ -14,6 +14,8 @@ int Server::Init( const std::string& conf_file ) {
     if (conf_.parse(conf_file)) {
         return 1;
     }
+    std::cout << "==== conf ====" << std::endl;
+    conf_.debugConfig();
 
     return 0;
 }
@@ -23,9 +25,10 @@ int Server::Run( void ) {
     for (size_t i = 0; i < servers_info.size(); ++i) {
         try {
             int sock = createSocket();
+            fcntl(sock, F_SETFL, O_NONBLOCK);
             this->bindSocket(sock, servers_info[i]);
             this->listenSocket(sock);
-            this->addSocketDescriptor(sock, POLLIN);
+            this->registerDescriptor(sock, POLLIN);
             this->addListeningDescriptor(sock);
         } catch (std::exception &e) {
             std::cerr << e.what() << std::endl;
@@ -39,7 +42,7 @@ int Server::Run( void ) {
             events[i]->handler();
             delete events[i];
         }
-        // delete closed sd
+        this->deleteClosedDescriptor();
     }
 
     return 0;
@@ -73,7 +76,7 @@ void Server::listenSocket( int sock ) const {
     }
 }
 
-void Server::addSocketDescriptor( int sock, short events ) {
+void Server::registerDescriptor( int sock, short events ) {
     if (nfds_ == MAX_POLL_FDS) {
         RUNTIME_ERROR("fds is full");
     }
@@ -81,6 +84,19 @@ void Server::addSocketDescriptor( int sock, short events ) {
     fds_[nfds_].fd = sock;
     fds_[nfds_].events = events;
     ++nfds_;
+}
+
+void Server::deleteClosedDescriptor( void ) {
+    for (nfds_t i = 0; i < nfds_; ++i) {
+        if (fds_[i].fd == CLOSED_FD) {
+            // NOTE: 複数clientが同時にclosedする時もある
+            // したがって、fds_[i] = fds[nfds_]はNG
+            for (nfds_t j = i + 1; j < nfds_; ++j) {
+                fds_[j - 1] = fds_[j];
+            }
+            --nfds_;
+        }
+    }
 }
 
 std::vector<Event*> Server::waitForEvents( void ) {
@@ -97,7 +113,7 @@ std::vector<Event*> Server::waitForEvents( void ) {
         std::cout << "TIMEOUT" << std::endl;
         exit(EXIT_SUCCESS);
     } else {
-        events = getRaisedEvents();
+        events = this->getRaisedEvents();
     }
 
     return events;
@@ -116,7 +132,7 @@ std::vector<Event*> Server::getRaisedEvents( void ) {
             exit(EXIT_FAILURE);
         }
 
-        if (isListeningDescriptor(fds_[i].fd)) {
+        if (this->isListeningDescriptor(fds_[i].fd)) {
             events.push_back(new NewConnectionEvent(fds_[i].fd, *this));
         } else {
             events.push_back(new RecieveRequestEvent(fds_[i].fd));
