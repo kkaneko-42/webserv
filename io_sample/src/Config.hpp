@@ -67,7 +67,7 @@ struct LocationInfo {
 struct ServerInfo {
     // listen
     struct { int port; std::string addr; } listen;
-    
+
     // server_name
     std::string server_name;
 
@@ -129,6 +129,10 @@ class Config {
             const std::string& location_path );
         int parse( const std::string& filepath );
 
+        std::vector<ServerInfo> getServersInfo( void ) const {
+            return serversInfo;
+        }
+
     private:
         int doParse( const std::vector<Token>& tokens );
         int parseError( int status );
@@ -145,4 +149,4 @@ class Server {
 };
 */
 
-#endif
+#endif /* CONFIG_HPP */

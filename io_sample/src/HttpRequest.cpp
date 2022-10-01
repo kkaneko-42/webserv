@@ -42,6 +42,23 @@ int HttpRequest::parse( const std::string& request ) {
     return (0);
 }
 
+/*
+"http://localhost:4242/api/hogehoge.cgi/fuga"
+method_ == "GET",
+path_ == "/api/hogehoge.cgi/fuga.txt"
+version_ == "HTTP/1.1"
+is_cgi = true;
+
+if (is_cgi == true) {
+    // split executable : path_info
+    // std::string executable_path = "/api/hogehoge.cgi"
+    // put_eng("PATH_INFO", "fuga.txt");
+    std::system(executable_path);
+} else {
+    load_file(path_);
+}
+*/
+
 int HttpRequest::parseTop( const std::string& top_row ) {
     std::vector<std::string> tokens = splitString(top_row, " ");
 
