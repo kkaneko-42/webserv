@@ -1,13 +1,18 @@
 #include "HttpResponse.hpp"
 
+HttpResponse::HttpResponse( void )
+: version_("1.1"), status_(OK),
+headers_(std::vector< std::pair< std::string, std::string> >()),
+body_("") {}
+
 void HttpResponse::addHeader( const std::string& key, const std::string& value ) {
-    headers_.push_back(std::pair(key, value));
+    headers_.push_back(std::make_pair(key, value));
 }
 
 std::string HttpResponse::marshal( void ) const {
     std::string str = "";
 
-    str += version_ + " " + status_ + " " + statusMsg(status_) + "\r\n";
+    str += "HTTP/" + version_ + " " + std::to_string(status_) + " " + statusMsg(status_) + "\r\n";
     for (size_t i = 0; i < headers_.size(); ++i) {
         std::string key = headers_[i].first;
         std::string value = headers_[i].second;
@@ -20,7 +25,7 @@ std::string HttpResponse::marshal( void ) const {
     return str;
 }
 
-std::string HttpRequest::statusMsg( Status status ) const {
+std::string HttpResponse::statusMsg( Status status ) const {
     std::string msg;
 
     switch (status)

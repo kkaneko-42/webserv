@@ -5,6 +5,9 @@
 #include <poll.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <cerrno>
+#include <cstdio>
+#include <cstdlib>
 
 class Server;
 
@@ -16,6 +19,6 @@ class NewConnectionEvent : public Event {
     private:
         int listen_sd_;
         Server& server_;
-}
+};
 
 #endif

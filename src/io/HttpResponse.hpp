@@ -3,6 +3,7 @@
 
 #include <utility>
 #include <vector>
+#include <string>
 
 class HttpResponse {
     public:
@@ -15,10 +16,12 @@ class HttpResponse {
             INTERNAL_SERVER_ERROR = 500,
         };
 
-        void setVersion( const std::string& version ) { version_ = version };
+        HttpResponse( void );
+
+        void setVersion( const std::string& version ) { version_ = version; }
         void setStatus( Status status ) { status_ = status; }
         void addHeader( const std::string& key, const std::string& value );
-        void setBody( const std::string& body ) { body = body_; }
+        void setBody( const std::string& body ) { body_ = body; }
         
         std::string marshal( void ) const;
         std::string statusMsg( Status status ) const;
@@ -28,6 +31,6 @@ class HttpResponse {
         Status status_;
         std::vector< std::pair<std::string, std::string> > headers_;
         std::string body_;
-}
+};
 
 #endif

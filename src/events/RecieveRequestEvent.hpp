@@ -2,7 +2,9 @@
 #define RECIEVE_REQUEST_EVENT_HPP
 
 #include "Event.hpp"
-#include "../HttpRequest.hpp"
+#include "../io/HttpRequest.hpp"
+#include <sys/types.h>
+#include <sys/socket.h>
 
 class RecieveRequestEvent : public Event {
     public:
@@ -11,6 +13,6 @@ class RecieveRequestEvent : public Event {
 
     private:
         int client_sd_;
-}
+};
 
 #endif

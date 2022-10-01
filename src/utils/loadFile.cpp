@@ -1,4 +1,5 @@
 #include "utils.hpp"
+#include <fstream>
 
 std::string loadFile( const std::string& path ) {
     std::string res = "", buf = "";

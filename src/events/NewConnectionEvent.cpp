@@ -1,4 +1,5 @@
 #include "NewConnectionEvent.hpp"
+#include "../Server.hpp"
 
 NewConnectionEvent::NewConnectionEvent( int listen_sd, Server& server )
 : listen_sd_(listen_sd), server_(server) {}
@@ -21,7 +22,7 @@ int NewConnectionEvent::handler( void ) {
             }
         }
 
-        server.addSocketDiscriptor(new_sd, POLLIN);
+        server_.addSocketDescriptor(new_sd, POLLIN);
     }
 
     return (0);

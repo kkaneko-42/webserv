@@ -1,5 +1,7 @@
 #include "HttpRequest.hpp"
 #include <iostream>
+#include "../utils/utils.hpp"
+#include "../methods/HttpMethod.hpp"
 
 static std::vector<std::string> splitString(const std::string &str, const std::string& delim);
 
@@ -12,15 +14,13 @@ static void printVector(const std::vector<T>& v) {
     std::cout << "]" << std::endl;
 }
 
-HttpRequest::HttpRequest( const std::string& request )
-: method_(""), path_(""), version_(""), headers_(Headers()), body_("")
-{
-    std::cout << "=== req ===" << std::endl;
-    std::cout << request;
-    std::cout << "===========" << std::endl;
-    if (parse(request)) {
-        throw std::logic_error("parse error");
-    }
+HttpRequest::HttpRequest( void )
+: method_(NULL), path_(""), version_(""),
+headers_(Headers()), body_("")
+{}
+
+HttpRequest::~HttpRequest( void ) {
+    delete method_;
 }
 
 int HttpRequest::parse( const std::string& request ) {
@@ -49,7 +49,10 @@ int HttpRequest::parseTop( const std::string& top_row ) {
         return (1);
     }
 
-    method_ = tokens[0];
+    method_ = generateHttpMethod(tokens[0]);
+    if (method_ == NULL) {
+        return (1);
+    }
     path_ = tokens[1];
     version_ = tokens[2];
     
@@ -83,7 +86,7 @@ int HttpRequest::parseHeader( const std::vector<std::string>& headers ) {
 }
 
 void HttpRequest::printRequest( void ) const {
-    std::cout << "method: " << method_ << std::endl;
+    std::cout << "method: " << typeid(method_).name() << std::endl;
     std::cout << "path: " << path_ << std::endl;
     std::cout << "version: " << version_ << std::endl;
     std::cout << "accept: ";

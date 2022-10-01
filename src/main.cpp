@@ -7,11 +7,16 @@ int main( int ac, char** av ) {
         // print usage
         return (1);
     }
-    conf_file = (ac == 2) ? av[1] : "default.conf";
+    conf_file = (ac == 2) ? av[1] : "../configs/default.conf";
 
     Server server;
-    server.Init(conf_file);
-    server.Run();
+    if (server.Init(conf_file)) {
+        return (1);
+    }
+
+    if (server.Run()) {
+        return (1);
+    }
 
     return (0);
 }

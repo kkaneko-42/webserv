@@ -15,20 +15,18 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include <set>
 #include <fstream>
-#include "Config.hpp"
-#include "./event/NewConnectionEvent.hpp"
+#include "./conf/Config.hpp"
+#include "./events/NewConnectionEvent.hpp"
+#include "./events/RecieveRequestEvent.hpp"
 
 #define SYSCALL_ERROR( name ) \
-    { \ 
-        std::string str = name; \
-        throw std::runtime_error(str + ": " + strerror(errno)); \
-    }
+    std::string str = name;\
+    throw std::runtime_error(str + ": " + strerror(errno));
 
 #define RUNTIME_ERROR( msg ) \
-    { \ 
-        throw std::runtime_error(std::string("runtime error: ") + msg); \
-    }
+    throw std::runtime_error(std::string("runtime error: ") + msg);
 
 class Server {
     public:
@@ -41,15 +39,19 @@ class Server {
         int createSocket( void ) const;
         void bindSocket( int sock, const ServerInfo& info ) const;
         void listenSocket( int sock ) const;
-        int addSocketDescripter( int sock, short events );
+        void addSocketDescriptor( int sock, short events );
         std::vector<Event*> waitForEvents( void );
         std::vector<Event*> getRaisedEvents( void );
+
+        void addListeningDescriptor( int sock );
+        bool isListeningDescriptor( int sock ) const;
 
         const static size_t MAX_POLL_FDS = 200;
         const static int BACKLOG = 1024;
         const static int TIMEOUT = -1; // infinity
 
     private:
+        std::set<int> listening_fds_;
         struct pollfd fds_[MAX_POLL_FDS];
         nfds_t nfds_;
         Config conf_;

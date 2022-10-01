@@ -6,7 +6,10 @@ HttpResponse GET::execute( const HttpRequest& req ) {
     std::string content = loadFile(req.getPath());
 
     resp.setBody(content);
+    // TODO: set accurate header
     resp.addHeader("Content-Length", std::to_string(content.size()));
-    // TODO: select connection header
     resp.addHeader("Connection", "close");
+    // resp.addHeader("Content-Type", "text/html");
+
+    return resp;
 }

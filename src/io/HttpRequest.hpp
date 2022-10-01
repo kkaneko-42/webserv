@@ -6,6 +6,8 @@
 #include <exception>
 #include <iostream>
 
+class HttpMethod;
+
 class HttpRequest {
     public:
         // TODO: header valuesはenum等で状態として管理。stringのままは使いづらそう
@@ -18,15 +20,18 @@ class HttpRequest {
             std::string                 connection;
         };
 
-        HttpRequest( const std::string& request );
+        HttpRequest( void );
+        ~HttpRequest( void );
         std::string getPath( void ) const { return path_; }
-        void printRequest( void ) const;
-    private:
+        HttpMethod* getMethod( void ) const { return method_; }
         int parse( const std::string& request );
+        void printRequest( void ) const;
+
+    private:
         int parseTop( const std::string& top_row );
         int parseHeader( const std::vector<std::string>& headers );
-        // HttpMethod method_;
-        std::string method_; // GET
+        
+        HttpMethod* method_; // deletable(allocate in heap, or NULL)
         std::string path_; // /hoge
         std::string version_; // HTTP/1.1
         Headers headers_;
