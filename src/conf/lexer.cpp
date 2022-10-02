@@ -5,15 +5,14 @@
 #include "Config.hpp"
 
 static void skipSpace( std::string& str, std::string::size_type& idx ) {
-    const std::string delim = " \n\t\f\v";
-
     while (std::isspace(str[idx]) && idx < str.size()) {
         ++idx;
     }
 }
 
 static bool isTokenLiteral( char c ) {
-    return (std::isalnum(c) || c == '/' || c == '_' || '.');
+    return (std::isalnum(c) || c == '/' || c == '_' || c == '.'
+        || c == '{' || c == '}' || c == ':');
 }
 
 static void addToken(

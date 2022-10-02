@@ -22,7 +22,7 @@ class HttpRequest {
 
         HttpRequest( void );
         ~HttpRequest( void );
-        std::string getPath( void ) const { return path_; }
+        std::string getPath( void ) const;
         HttpMethod* getMethod( void ) const { return method_; }
         int parse( const std::string& request );
         void printRequest( void ) const;

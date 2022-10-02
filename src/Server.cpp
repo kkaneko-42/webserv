@@ -1,7 +1,9 @@
 #include "Server.hpp"
 
 Server::Server( void )
-: conf_(Config())
+: listening_fds_(std::set<int>()),
+resp_cache_(std::map<int, HttpResponse>()),
+nfds_(0), conf_(Config())
 {
     memset(fds_, 0, sizeof(fds_));
 }
@@ -58,12 +60,15 @@ int Server::createSocket( void ) const {
 }
 
 void Server::bindSocket( int sock, const ServerInfo& info ) const {
+    bool yes = true;
     struct sockaddr_in addr;
     socklen_t addr_size = sizeof(addr);
 
     addr.sin_family = AF_INET;
     addr.sin_port = htons(info.listen.port);
     addr.sin_addr.s_addr = inet_addr(info.listen.addr.c_str());
+    setsockopt(sock, SOL_SOCKET, SO_REUSEADDR,
+        (const char*)&yes, sizeof(yes));
 
     if (bind(sock, (struct sockaddr*)&addr, addr_size) < 0) {
         SYSCALL_ERROR("bind");
@@ -87,14 +92,14 @@ void Server::registerDescriptor( int sock, short events ) {
 }
 
 void Server::deleteClosedDescriptor( void ) {
-    for (nfds_t i = 0; i < nfds_; ++i) {
+    nfds_t i = 0;
+
+    while (i < nfds_) {
         if (fds_[i].fd == CLOSED_FD) {
-            // NOTE: 複数clientが同時にclosedする時もある
-            // したがって、fds_[i] = fds[nfds_]はNG
-            for (nfds_t j = i + 1; j < nfds_; ++j) {
-                fds_[j - 1] = fds_[j];
-            }
+            fds_[i] = fds_[nfds_ - 1];
             --nfds_;
+        } else {
+            ++i;
         }
     }
 }
@@ -121,21 +126,28 @@ std::vector<Event*> Server::waitForEvents( void ) {
 
 std::vector<Event*> Server::getRaisedEvents( void ) {
     std::vector<Event*> events;
+    short revents;
 
     for (nfds_t i = 0; i < nfds_; ++i) {
-        if (fds_[i].revents == 0) {
+        revents = fds_[i].revents;
+        std::cout << "i: " << i << std::endl;
+        std::cout << "revents: " << revents << std::endl;
+
+        if (revents == 0) {
             continue;
         }
 
-        if (fds_[i].revents != POLLIN) {
+        if (revents & (POLLIN | POLLOUT) == 0) {
             perror("invalid event");
             exit(EXIT_FAILURE);
         }
 
         if (this->isListeningDescriptor(fds_[i].fd)) {
             events.push_back(new NewConnectionEvent(fds_[i].fd, *this));
+        } else if (revents & POLLIN != 0) {
+            events.push_back(new RecieveRequestEvent(fds_[i].fd, *this));
         } else {
-            events.push_back(new RecieveRequestEvent(fds_[i].fd));
+            events.push_back(new SendResponseEvent(fds_[i].fd, *this));
         }
     }
 
@@ -148,4 +160,16 @@ void Server::addListeningDescriptor( int sock ) {
 
 bool Server::isListeningDescriptor( int sock ) const {
     return (listening_fds_.count(sock) > 0);
+}
+
+void Server::cacheResponse( int client_sd, const HttpResponse& resp ) {
+    resp_cache_.insert(std::make_pair(client_sd, resp));
+}
+
+void Server::removeCachedResponse( int client_sd ) {
+    resp_cache_.erase(client_sd);
+}
+
+HttpResponse Server::getCachedResponse( int client_sd ) {
+    return resp_cache_[client_sd];
 }

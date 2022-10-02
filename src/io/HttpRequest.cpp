@@ -25,6 +25,11 @@ HttpRequest::~HttpRequest( void ) {
 
 int HttpRequest::parse( const std::string& request ) {
     const std::string header_body_delim = "\r\n\r\n";
+
+    std::cout << "request {" << std::endl;
+    std::cout << request << std::endl;
+    std::cout << "}" << std::endl;
+
     std::string::size_type empty_line_pos = request.find(header_body_delim);
     body_ = request.substr(empty_line_pos + header_body_delim.size());
 
@@ -77,8 +82,6 @@ int HttpRequest::parseHeader( const std::vector<std::string>& headers ) {
             headers_.host = value;
         } else if (key == "Connection") {
             headers_.connection = value;
-        } else {
-            return (1);
         }
     }
 
@@ -113,4 +116,8 @@ static std::vector<std::string> splitString(const std::string &str, const std::s
     }
     vec.push_back(str.substr(prev));
     return vec;
+}
+
+std::string HttpRequest::getPath( void ) const {
+    return path_;
 }

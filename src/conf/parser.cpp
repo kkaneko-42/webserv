@@ -41,7 +41,7 @@ int Config::server(
             return (1);
         }
     }
-
+    
     // now: it->str == "}"
     ++it;
 
@@ -148,6 +148,7 @@ int Config::location_conf(
 
     ++it;
     // now: it->str == <value>
+    std::cout << "item: " << item << std::endl;
     if (item == "root") {
         info.root = it->str;
         ++it;

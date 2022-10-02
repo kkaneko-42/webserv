@@ -1,9 +1,9 @@
 #include "Config.hpp"
+#include "../utils/utils.hpp"
 #include <fstream>
 #include <cctype>
 #include <iostream>
 
-static int loadFile( const std::string& filepath, std::string& content );
 int lexer(
     const std::string& file_content,
     std::vector<std::string>& tokens );
@@ -74,21 +74,4 @@ void Config::debugConfig( void ) {
             printVector(info.allow_cgi_extensions);
         }
     }
-}
-
-static int loadFile( const std::string& filepath, std::string& content ) {
-    std::string buf;
-    std::ifstream ifs(filepath);
-
-    if (!ifs) {
-        return (1);
-    }
-
-    content = "";
-    while (!ifs.eof()) {
-        std::getline(ifs, buf);
-        content += buf + "\n";
-    }
-
-    return (0);
 }

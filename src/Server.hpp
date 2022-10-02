@@ -20,6 +20,7 @@
 #include "./conf/Config.hpp"
 #include "./events/NewConnectionEvent.hpp"
 #include "./events/RecieveRequestEvent.hpp"
+#include "./events/SendResponseEvent.hpp"
 
 #define SYSCALL_ERROR( name ) \
     std::string str = name;\
@@ -47,12 +48,17 @@ class Server {
         void addListeningDescriptor( int sock );
         bool isListeningDescriptor( int sock ) const;
 
+        void cacheResponse( int client_sd, const HttpResponse& resp );
+        HttpResponse getCachedResponse( int client_sd );
+        void removeCachedResponse( int client_sd );
+
         const static size_t MAX_POLL_FDS = 200;
         const static int BACKLOG = 1024;
         const static int TIMEOUT = -1; // infinity
 
     private:
         std::set<int> listening_fds_;
+        std::map<int, HttpResponse> resp_cache_;
         struct pollfd fds_[MAX_POLL_FDS];
         nfds_t nfds_;
         Config conf_;

@@ -1,6 +1,8 @@
 #ifndef EVENT_HPP
 #define EVENT_HPP
 
+#define CLOSED_FD -1
+
 class Event {
     public:
         virtual ~Event( void ) {}

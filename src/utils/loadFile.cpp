@@ -1,23 +1,27 @@
 #include "utils.hpp"
 #include <fstream>
+#include <iostream>
 
-std::string loadFile( const std::string& path ) {
-    std::string res = "", buf = "";
+int loadFile( const std::string& path, std::string& content ) {
+    std::string buf = "";
     std::ifstream ifs(path.c_str());
     if (!ifs) {
-        // TODO:
-        std::exit(1);
+        std::cerr << "open failed" << std::endl;
+        return (1);
     }
 
-    while (!ifs.eof()) {
+    while(!ifs.eof()) {
+        if (!ifs) {
+            std::cerr << "read failed" << std::endl;
+            return (1);
+        }
         std::getline(ifs, buf);
-        res += buf + "\n";
+        content += buf + "\r\n";
     }
+    /*
+    res = std::string(std::istreambuf_iterator<char>(ifs), 
+                    std::istreambuf_iterator<char>());
+    */
 
-    if (!ifs) {
-        // TODO:
-        std::exit(1);
-    }
-
-    return (res);
+    return (0);
 }

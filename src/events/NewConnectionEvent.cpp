@@ -22,7 +22,7 @@ int NewConnectionEvent::handler( void ) {
             }
         }
 
-        server_.registerDescriptor(new_sd, POLLIN);
+        server_.registerDescriptor(new_sd, POLLIN | POLLOUT);
     }
 
     return (0);
