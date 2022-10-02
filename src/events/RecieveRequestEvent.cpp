@@ -25,8 +25,18 @@ int RecieveRequestEvent::handler( void ) {
         return (1);
     }
 
-    // cache response
-    HttpResponse resp = req.getMethod()->execute(req);
+    // もしrequestをcacheする場合、以下はSendResponseEvent->hander内に記述
+    HttpResponse resp;
+    /* create response */
+    if (req.hostMatching(server_.getConf().getServersInfo())) { // host matching
+        resp = HttpResponse::createErrorResponse();
+    } else if (req.locationMatching()) { // location matching
+        resp = HttpResponse::createErrorResponse(HttpResponse::Status::NOT_FOUND, req.getHostInfo());
+    } else {
+        resp = req.getMethod()->execute(req);
+    }
+
+    /* cache response */
     server_.cacheResponse(client_sd_, resp);
     std::cout << "==== RESPONSE ====" << std::endl;
     std::cout << resp.marshal() << std::endl;

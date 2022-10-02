@@ -5,6 +5,7 @@
 #include <vector>
 #include <exception>
 #include <iostream>
+#include "../conf/Config.hpp"
 
 class HttpMethod;
 
@@ -23,15 +24,21 @@ class HttpRequest {
         HttpRequest( void );
         ~HttpRequest( void );
         std::string getPath( void ) const;
+        std::string getHostName( bool flag_resolve = false ) const;
+        ServerInfo getHostInfo( void ) const { return host_info_; }
         HttpMethod* getMethod( void ) const { return method_; }
         int parse( const std::string& request );
+        int hostMatching( const std::vector<ServerInfo>& servers_info );
+        int locationMatching( void );
         void printRequest( void ) const;
 
     private:
         int parseTop( const std::string& top_row );
         int parseHeader( const std::vector<std::string>& headers );
-        
+
         HttpMethod* method_; // deletable(allocate in heap, or NULL)
+        ServerInfo host_info_;
+        LocationInfo location_info_;
         std::string path_; // /hoge
         std::string version_; // HTTP/1.1
         Headers headers_;

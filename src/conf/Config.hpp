@@ -15,7 +15,7 @@ server {
 
     error_page 404 /404.html;
         or 
-    error_page 400 401 402 403 404 /40x.html;
+    error_page 400 401 402 403 404 ./40x.html;
 
     location / {
         (必須)root ./html;
@@ -37,12 +37,16 @@ server {
 
 server {
     listen 0.0.0.0:4243;
+
+    error_page 400 ./hoge_error.html
 }
 
 server {
     listen 0.0.0.0:4244;
 }
 */
+
+class Server;
 
 struct LocationInfo {
     std::string                 root;
@@ -53,6 +57,8 @@ struct LocationInfo {
     bool                        allow_file_upload;
     std::string                 save_folder;
     std::vector<std::string>    allow_cgi_extensions;
+
+    bool locationMathcing( const std::string& path, const std::string& host, const Server& server );
 
     /*
     // TODO: 初期化する

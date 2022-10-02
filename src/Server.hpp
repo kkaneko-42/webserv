@@ -52,6 +52,8 @@ class Server {
         HttpResponse getCachedResponse( int client_sd );
         void removeCachedResponse( int client_sd );
 
+        Config getConf( void ) const { return conf_; }
+
         const static size_t MAX_POLL_FDS = 200;
         const static int BACKLOG = 1024;
         const static int TIMEOUT = -1; // infinity

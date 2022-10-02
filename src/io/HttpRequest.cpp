@@ -66,9 +66,9 @@ int HttpRequest::parseTop( const std::string& top_row ) {
 
 int HttpRequest::parseHeader( const std::vector<std::string>& headers ) {
     for (size_t i = 0; i < headers.size(); ++i) {
-        std::string::size_type colon_pos = headers[i].find(":");
-        std::string key = headers[i].substr(0, colon_pos);
-        std::string value = headers[i].substr(colon_pos + 1);
+        std::string::size_type delim_pos = headers[i].find(": ");
+        std::string key = headers[i].substr(0, delim_pos);
+        std::string value = headers[i].substr(delim_pos + 2);
 
         if (key == "Accept") {
             headers_.accept = splitString(value, ", ");
@@ -102,6 +102,84 @@ void HttpRequest::printRequest( void ) const {
     std::cout << body_;
 }
 
+std::string HttpRequest::getPath( void ) const {
+    return (location_info_.root + path_);
+}
+
+int HttpRequest::hostMatching( const std::vector<ServerInfo>& servers_info ) {
+    // get hostname (127.0.0.1:4242, example.com:4242, etc...)
+    const std::string hostname = this->getHostName();
+    const std::string hostname_resolved = this->getHostName(true);
+
+    for (size_t i = 0; i < servers_info.size(); ++i) {
+        ServerInfo info = servers_info[i];
+        const std::string listen_str =
+            info.listen.addr + ":" + std::to_string(info.listen.port);
+
+        if ((hostname == listen_str) || (hostname_resolved == listen_str)) {
+            host_info_ = info;
+            return 0;
+        }
+    }
+
+    return (1);
+}
+
+int HttpRequest::locationMatching( void ) {
+    std::string path = path_;
+    // path == "/hoge/fuga/index.html"
+
+    while (true) {
+        std::string::size_type pos = path.rfind("/");
+        if (pos == std::string::npos) {
+            return 1;
+        }
+
+        path = path.substr(0, pos + 1);
+        // path == "/hoge/fuga/"
+
+        if (host_info_.locations_info_map.count(path) != 0) {
+            location_info_ = host_info_.locations_info_map[path];
+            break;
+        }
+
+        path = path.substr(0, pos);
+        // path == "/hoge/fuga"
+    }
+
+    return 0;
+}
+
+std::string HttpRequest::getHostName( bool flag_resolve ) const {
+    std::string hostname = headers_.host;
+
+    if (!flag_resolve) {
+        return (hostname);
+    }
+
+    // resolve "localhost"
+    std::string::size_type localhost_pos = hostname.find("localhost");
+    if (localhost_pos != std::string::npos) {
+        hostname.replace(
+            localhost_pos,
+            std::string("localhost").size(),
+            "127.0.0.1"
+        );
+    }
+
+    // resolve server_name
+    std::string::size_type server_name_pos = hostname.find(host_info_.server_name);
+    if (server_name_pos != std::string::npos) {
+        hostname.replace(
+            server_name_pos,
+            host_info_.server_name.size(),
+            host_info_.listen.addr
+        );
+    }
+
+    return (hostname);
+}
+
 static std::vector<std::string> splitString(const std::string &str, const std::string& delim) {
     std::vector<std::string> vec;
 
@@ -116,8 +194,4 @@ static std::vector<std::string> splitString(const std::string &str, const std::s
     }
     vec.push_back(str.substr(prev));
     return vec;
-}
-
-std::string HttpRequest::getPath( void ) const {
-    return path_;
 }

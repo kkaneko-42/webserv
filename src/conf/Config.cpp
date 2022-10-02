@@ -1,5 +1,6 @@
 #include "Config.hpp"
 #include "../utils/utils.hpp"
+#include "../Server.hpp"
 #include <fstream>
 #include <cctype>
 #include <iostream>

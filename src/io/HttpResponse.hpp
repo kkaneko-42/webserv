@@ -5,6 +5,9 @@
 #include <vector>
 #include <string>
 
+struct ServerInfo;
+struct LocationInfo;
+
 class HttpResponse {
     public:
         enum Status {
@@ -12,6 +15,7 @@ class HttpResponse {
             CREATED,
 
             BAD_REQUEST = 400,
+            NOT_FOUND = 404,
 
             INTERNAL_SERVER_ERROR = 500,
         };
@@ -22,9 +26,12 @@ class HttpResponse {
         void setStatus( Status status ) { status_ = status; }
         void addHeader( const std::string& key, const std::string& value );
         void setBody( const std::string& body ) { body_ = body; }
-        
+
         std::string marshal( void ) const;
         std::string statusMsg( Status status ) const;
+
+        static HttpResponse createErrorResponse( Status status, const ServerInfo& host_info );
+        static HttpResponse createErrorResponse( void );
 
     private:
         std::string version_;
