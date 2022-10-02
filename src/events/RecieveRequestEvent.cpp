@@ -28,6 +28,9 @@ int RecieveRequestEvent::handler( void ) {
     // cache response
     HttpResponse resp = req.getMethod()->execute(req);
     server_.cacheResponse(client_sd_, resp);
+    std::cout << "==== RESPONSE ====" << std::endl;
+    std::cout << resp.marshal() << std::endl;
+    std::cout << "==================" << std::endl;
 
     return (0);
 }

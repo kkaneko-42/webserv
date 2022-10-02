@@ -60,15 +60,18 @@ int Server::createSocket( void ) const {
 }
 
 void Server::bindSocket( int sock, const ServerInfo& info ) const {
-    bool yes = true;
+    linger lin;
     struct sockaddr_in addr;
     socklen_t addr_size = sizeof(addr);
 
     addr.sin_family = AF_INET;
     addr.sin_port = htons(info.listen.port);
     addr.sin_addr.s_addr = inet_addr(info.listen.addr.c_str());
-    setsockopt(sock, SOL_SOCKET, SO_REUSEADDR,
-        (const char*)&yes, sizeof(yes));
+
+    lin.l_onoff = 0;
+    lin.l_linger = 0;
+    setsockopt(sock, SOL_SOCKET, SO_LINGER,
+        (const char*)&lin, sizeof(int));
 
     if (bind(sock, (struct sockaddr*)&addr, addr_size) < 0) {
         SYSCALL_ERROR("bind");
@@ -108,6 +111,7 @@ std::vector<Event*> Server::waitForEvents( void ) {
     std::vector<Event*> events;
 
     std::cout << "wait Events..." << std::endl;
+    std::cout << "nfds: " << nfds_ << std::endl;
     int rc = poll(fds_, nfds_, TIMEOUT);
     if (rc == -1) {
         // error
@@ -137,16 +141,16 @@ std::vector<Event*> Server::getRaisedEvents( void ) {
             continue;
         }
 
-        if (revents & (POLLIN | POLLOUT) == 0) {
+        if ((revents & (POLLIN | POLLOUT)) == 0) {
             perror("invalid event");
             exit(EXIT_FAILURE);
         }
 
         if (this->isListeningDescriptor(fds_[i].fd)) {
             events.push_back(new NewConnectionEvent(fds_[i].fd, *this));
-        } else if (revents & POLLIN != 0) {
+        } else if ((revents & POLLIN) != 0) {
             events.push_back(new RecieveRequestEvent(fds_[i].fd, *this));
-        } else {
+        } else if ((revents & POLLOUT) != 0 && resp_cache_.count(fds_[i].fd) != 0) {
             events.push_back(new SendResponseEvent(fds_[i].fd, *this));
         }
     }
