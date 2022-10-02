@@ -1,5 +1,6 @@
 #include "../methods/GET.hpp"
 #include "../methods/DELETE.hpp"
+#include "../methods/POST.hpp"
 
 HttpMethod* generateHttpMethod( const std::string& name ) {
     HttpMethod* method;
@@ -8,6 +9,8 @@ HttpMethod* generateHttpMethod( const std::string& name ) {
         method = new GET();
     } else if (name == "DELETE") {
         method = new DELETE();
+    } else if (name == "POST") {
+        method = new POST();
     } else {
         method = NULL;
     }

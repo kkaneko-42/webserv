@@ -28,6 +28,7 @@ class HttpRequest {
         ServerInfo getHostInfo( void ) const { return host_info_; }
         LocationInfo getLocationInfo( void ) const { return location_info_; }
         HttpMethod* getMethod( void ) const { return method_; }
+        std::string getBody( void ) const { return body_; }
         int parse( const std::string& request );
         int hostMatching( const std::vector<ServerInfo>& servers_info );
         int locationMatching( void );
