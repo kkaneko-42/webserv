@@ -106,6 +106,10 @@ std::string HttpRequest::getPath( void ) const {
     return (location_info_.root + path_);
 }
 
+std::string HttpRequest::getUploadPath( void ) const {
+    return (location_info_.save_folder + path_);
+}
+
 int HttpRequest::hostMatching( const std::vector<ServerInfo>& servers_info ) {
     // get hostname (127.0.0.1:4242, example.com:4242, etc...)
     const std::string hostname = this->getHostName();
