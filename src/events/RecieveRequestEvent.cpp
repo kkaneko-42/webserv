@@ -29,7 +29,7 @@ int RecieveRequestEvent::handler( void ) {
     HttpResponse resp;
     /* create response */
     if (req.hostMatching(server_.getConf().getServersInfo())) { // host matching
-        resp = HttpResponse::createErrorResponse();
+        resp = HttpResponse::createErrorResponse(HttpResponse::Status::NOT_FOUND);
     } else if (req.locationMatching()) { // location matching
         resp = HttpResponse::createErrorResponse(HttpResponse::Status::NOT_FOUND, req.getHostInfo());
     } else {

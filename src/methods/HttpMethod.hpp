@@ -3,6 +3,7 @@
 
 #include "../io/HttpResponse.hpp"
 #include "../io/HttpRequest.hpp"
+#include "../conf/Config.hpp"
 
 class HttpMethod {
     public:
@@ -11,5 +12,6 @@ class HttpMethod {
 };
 
 HttpMethod* generateHttpMethod( const std::string& name );
+bool isMethodAllowed( const std::string& name, const LocationInfo& location );
 
 #endif

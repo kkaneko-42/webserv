@@ -16,6 +16,7 @@ class HttpResponse {
 
             BAD_REQUEST = 400,
             NOT_FOUND = 404,
+            METHOD_NOT_ALLOWED,
 
             INTERNAL_SERVER_ERROR = 500,
         };
@@ -31,7 +32,7 @@ class HttpResponse {
         std::string statusMsg( Status status ) const;
 
         static HttpResponse createErrorResponse( Status status, const ServerInfo& host_info );
-        static HttpResponse createErrorResponse( void );
+        static HttpResponse createErrorResponse( Status status );
 
     private:
         std::string version_;
