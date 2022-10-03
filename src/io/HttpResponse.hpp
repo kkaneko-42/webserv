@@ -31,8 +31,8 @@ class HttpResponse {
         void setBody( const std::string& body ) { body_ = body; }
 
         std::string marshal( void ) const;
-        std::string statusMsg( Status status ) const;
-
+    
+        static std::string statusMsg( Status status );
         static HttpResponse createErrorResponse( Status status, const ServerInfo& host_info );
         static HttpResponse createErrorResponse( Status status );
         static HttpResponse createDirListingResponse( const HttpRequest& req );

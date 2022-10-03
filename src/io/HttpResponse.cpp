@@ -28,7 +28,7 @@ std::string HttpResponse::marshal( void ) const {
     return str;
 }
 
-std::string HttpResponse::statusMsg( Status status ) const {
+std::string HttpResponse::statusMsg( Status status ) {
     std::string msg;
 
     switch (status)
@@ -47,6 +47,9 @@ std::string HttpResponse::statusMsg( Status status ) const {
             break;
         case METHOD_NOT_ALLOWED:
             msg = "Method Not Allowed";
+            break;
+        case PAYLOAD_TOO_LARGE:
+            msg = "Payload Too Large";
             break;
         case INTERNAL_SERVER_ERROR:
             msg = "Internal Server Error";
@@ -83,13 +86,13 @@ HttpResponse HttpResponse::createErrorResponse( Status status, const ServerInfo&
 
 HttpResponse HttpResponse::createErrorResponse( Status status ) {
     const std::string default_page_content =
-"<!DOCTYPE HTML>\r\n"
-"<html><head>\r\n"
-"<title>An error occurred.</title>\r\n"
-"</head><body>\r\n"
-"<h1>Not Found</h1>\r\n"
-"<p>The requested URL was not found on this server.</p>\r\n"
-"</body></html>\r\n";
+    "<!DOCTYPE HTML>\r\n"
+    "<html><head>\r\n"
+    "<title>An error occurred.</title>\r\n"
+    "</head><body>\r\n"
+    "<h1>" + HttpResponse::statusMsg(status) + "</h1>\r\n"
+    "<p>The requested URL was not found on this server.</p>\r\n"
+    "</body></html>\r\n";
 
     HttpResponse resp;
     resp.setStatus(status);
@@ -111,6 +114,7 @@ HttpResponse HttpResponse::createDirListingResponse( const HttpRequest& req ) {
     for (size_t i = 0; i < file_list.size(); ++i) {
         res_body += "<p>" + file_list[i] + "</p>\r\n";
     }
+    res_body += "</body></html>\r\n";
 
     HttpResponse resp;
     resp.setBody(res_body);

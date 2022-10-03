@@ -28,7 +28,9 @@ int RecieveRequestEvent::handler( void ) {
     // もしrequestをcacheする場合、以下はSendResponseEvent->hander内に記述
     HttpResponse resp;
     /* create response */
-    if (req.hostMatching(server_.getConf().getServersInfo())) { // host matching
+    if (req.getBody().size() > req.getHostInfo().client_max_body_size) { // validate body size
+        resp = HttpResponse::createErrorResponse(HttpResponse::Status::PAYLOAD_TOO_LARGE);
+    } else if (req.hostMatching(server_.getConf().getServersInfo())) { // host matching
         resp = HttpResponse::createErrorResponse(HttpResponse::Status::NOT_FOUND);
     } else if (req.locationMatching()) { // location matching
         resp = HttpResponse::createErrorResponse(HttpResponse::Status::NOT_FOUND, req.getHostInfo());
