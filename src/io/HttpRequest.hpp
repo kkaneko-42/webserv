@@ -24,6 +24,7 @@ class HttpRequest {
         HttpRequest( void );
         ~HttpRequest( void );
         std::string getPath( void ) const;
+        std::string getRawPath( void ) const { return path_; }
         std::string getUploadPath( void ) const;
         std::string getHostName( bool flag_resolve = false ) const;
         ServerInfo getHostInfo( void ) const { return host_info_; }

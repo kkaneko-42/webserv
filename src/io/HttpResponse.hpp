@@ -7,6 +7,7 @@
 
 struct ServerInfo;
 struct LocationInfo;
+class HttpRequest;
 
 class HttpResponse {
     public:
@@ -33,6 +34,7 @@ class HttpResponse {
 
         static HttpResponse createErrorResponse( Status status, const ServerInfo& host_info );
         static HttpResponse createErrorResponse( Status status );
+        static HttpResponse createDirListingResponse( const HttpRequest& req );
 
     private:
         std::string version_;

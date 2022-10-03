@@ -1,4 +1,5 @@
 #include "HttpResponse.hpp"
+#include "HttpRequest.hpp"
 #include "../utils/utils.hpp"
 #include "../conf/Config.hpp"
 
@@ -94,6 +95,26 @@ HttpResponse HttpResponse::createErrorResponse( Status status ) {
     resp.setStatus(status);
     resp.addHeader("Content-Length", std::to_string(default_page_content.size()));
     resp.setBody(default_page_content);
+
+    return (resp);
+}
+
+HttpResponse HttpResponse::createDirListingResponse( const HttpRequest& req ) {
+    std::vector<std::string> file_list = getFileList(req.getPath());
+    std::string res_body;
+
+    res_body += "<!DOCTYPE HTML>\r\n";
+    res_body += "<html><head>\r\n";
+    res_body += "<h1>Indexof " + req.getRawPath() + "</h1>\r\n";
+    res_body += "</head><hr><body>\r\n";
+
+    for (size_t i = 0; i < file_list.size(); ++i) {
+        res_body += "<p>" + file_list[i] + "</p>\r\n";
+    }
+
+    HttpResponse resp;
+    resp.setBody(res_body);
+    resp.addHeader("Content-Length", std::to_string(res_body.size()));
 
     return (resp);
 }

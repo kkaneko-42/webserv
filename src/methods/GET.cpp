@@ -1,19 +1,30 @@
 #include "GET.hpp"
+#include "../utils/utils.hpp"
 
 HttpResponse GET::execute( const HttpRequest& req ) {
     const ServerInfo host_info = req.getHostInfo();
+    const LocationInfo location = req.getLocationInfo();
+    std::string path = req.getPath();
 
-    if (!isMethodAllowed("GET", req.getLocationInfo())) {
+    if (!isMethodAllowed("GET", location)) {
         return HttpResponse::createErrorResponse(
             HttpResponse::Status::METHOD_NOT_ALLOWED,
             host_info
         );
     }
 
+    if (pathIsDir(path)) {
+        if (location.index != "") {
+            path += location.index;
+        } else if (location.autoindex) {
+            return HttpResponse::createDirListingResponse(req);
+        }
+    }
+
     std::string content;
-    if (loadFile(req.getPath(), content)) {
+    if (loadFile(path, content)) {
         return HttpResponse::createErrorResponse(
-            HttpResponse::Status::BAD_REQUEST,
+            HttpResponse::Status::NOT_FOUND,
             host_info
         );
     }
