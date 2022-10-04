@@ -1,7 +1,7 @@
 NAME = webserv
 
 CXX = c++
-CXXFLAGS = # -Wall -Wextra -Werror -std=c++98
+CXXFLAGS = -g # -Wall -Wextra -Werror -std=c++98
 DEPFLAGS = -MMD -MP
 
 SRCS = $(wildcard src/*.cpp src/*/*.cpp)
@@ -19,7 +19,7 @@ $(NAME): $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $@ $(OBJS)
 
 obj/%.o: src/%.cpp $(OBJS_DIR)
-	cc $(CXXFLAGS) $(DEPFLAGS) -o $@ -c $<
+	$(CXX) $(CXXFLAGS) $(DEPFLAGS) -o $@ -c $<
 
 $(OBJS_DIR):
 	mkdir -p $(@D)

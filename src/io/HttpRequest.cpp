@@ -2,8 +2,7 @@
 #include <iostream>
 #include "../utils/utils.hpp"
 #include "../methods/HttpMethod.hpp"
-
-static std::vector<std::string> splitString(const std::string &str, const std::string& delim);
+#include <cassert>
 
 template <typename T>
 static void printVector(const std::vector<T>& v) {
@@ -103,7 +102,10 @@ void HttpRequest::printRequest( void ) const {
 }
 
 std::string HttpRequest::getPath( void ) const {
-    return (location_info_.root + path_);
+    assert(path_.size() >= location_info_.location_path.size());
+    std::string full_path = path_.substr(location_info_.location_path.size());
+    const std::string root = location_info_.root;
+    return root + full_path;
 }
 
 std::string HttpRequest::getUploadPath( void ) const {
@@ -182,20 +184,4 @@ std::string HttpRequest::getHostName( bool flag_resolve ) const {
     }
 
     return (hostname);
-}
-
-static std::vector<std::string> splitString(const std::string &str, const std::string& delim) {
-    std::vector<std::string> vec;
-
-    std::string::size_type prev = 0;
-    while (true) {
-        std::string::size_type pos = str.find(delim, prev);
-        if (pos == std::string::npos)
-            break;
-        std::string sub = str.substr(prev, pos - prev);
-        vec.push_back(sub);
-        prev = pos + delim.size();
-    }
-    vec.push_back(str.substr(prev));
-    return vec;
 }

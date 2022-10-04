@@ -122,3 +122,35 @@ HttpResponse HttpResponse::createDirListingResponse( const HttpRequest& req ) {
 
     return (resp);
 }
+
+HttpResponse HttpResponse::unmarshal( const std::string& str ) {
+    const std::string header_body_delim = "\r\n\r\n";
+    HttpResponse resp;
+    std::vector<std::string> header_body = splitString(str, header_body_delim);
+
+    if (header_body.size() != 2) {
+        return createErrorResponse(NOT_FOUND);
+    }
+
+    // header
+    std::vector<std::string> headers = splitString(header_body[0], "\r\n");
+    for (size_t i = 0; i < headers.size(); ++i) {
+        std::string key_value_delim = ":";
+        std::vector<std::string> key_value = splitString(headers[i], key_value_delim);
+        if (key_value.size() != 2) {
+            return createErrorResponse(NOT_FOUND);
+        }
+
+        if (toLowerString(key_value[0]) == "status") {
+            resp.setStatus(Status(atoi(key_value[1].c_str())));
+        } else {
+            // NOTE: key_value[1] == "" case
+            resp.addHeader(toLowerString(key_value[0]), trimString(key_value[1]));
+        }
+    }
+
+    // body
+    resp.setBody(header_body[1]);
+
+    return (resp);
+}

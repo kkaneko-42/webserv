@@ -1,5 +1,6 @@
 #include "GET.hpp"
 #include "../utils/utils.hpp"
+#include "../cgi/CgiExecutor.hpp"
 
 HttpResponse GET::execute( const HttpRequest& req ) {
     const ServerInfo host_info = req.getHostInfo();
@@ -19,6 +20,12 @@ HttpResponse GET::execute( const HttpRequest& req ) {
         } else if (location.autoindex) {
             return HttpResponse::createDirListingResponse(req);
         }
+    }
+
+    CgiExecutor cgi;
+    cgi.init(req);
+    if (cgi.isExecutable()) {
+        return cgi.execute(req);
     }
 
     std::string content;

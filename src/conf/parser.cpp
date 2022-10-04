@@ -145,6 +145,7 @@ int Config::location_conf(
 {
     const std::string item = it->str;
     LocationInfo& info = serversInfo.rbegin()->locations_info_map[location_path];
+    info.location_path = location_path;
 
     ++it;
     // now: it->str == <value>

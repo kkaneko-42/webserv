@@ -49,6 +49,7 @@ server {
 class Server;
 
 struct LocationInfo {
+    std::string                 location_path;
     std::string                 root;
     std::vector<std::string>    allow_methods;
     std::string                 return_path;
