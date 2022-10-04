@@ -1,5 +1,6 @@
 #include "utils.hpp"
 #include <dirent.h>
+#include <algorithm>
 
 std::vector<std::string> getFileList( const std::string& dir_path ) {
     DIR* dir = NULL;
@@ -27,5 +28,6 @@ std::vector<std::string> getFileList( const std::string& dir_path ) {
         res.push_back(filename);
     }
 
+    std::sort(res.begin(), res.end());
     return res;
 }

@@ -112,7 +112,7 @@ HttpResponse HttpResponse::createDirListingResponse( const HttpRequest& req ) {
     res_body += "</head><hr><body>\r\n";
 
     for (size_t i = 0; i < file_list.size(); ++i) {
-        res_body += "<p>" + file_list[i] + "</p>\r\n";
+        res_body += "<p><a href=\"./" + file_list[i] + "\">" + file_list[i] + "</a></p>\r\n";
     }
     res_body += "</body></html>\r\n";
 
