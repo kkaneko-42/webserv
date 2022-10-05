@@ -60,7 +60,7 @@ int Server::createSocket( void ) const {
 }
 
 void Server::bindSocket( int sock, const ServerInfo& info ) const {
-    linger lin;
+    int on = 1;
     struct sockaddr_in addr;
     socklen_t addr_size = sizeof(addr);
 
@@ -68,10 +68,9 @@ void Server::bindSocket( int sock, const ServerInfo& info ) const {
     addr.sin_port = htons(info.listen.port);
     addr.sin_addr.s_addr = inet_addr(info.listen.addr.c_str());
 
-    lin.l_onoff = 0;
-    lin.l_linger = 0;
-    setsockopt(sock, SOL_SOCKET, SO_LINGER,
-        (const char*)&lin, sizeof(int));
+    if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (char*)&on, sizeof(on)) < 0) {
+        SYSCALL_ERROR("setsockopt");
+    }
 
     if (bind(sock, (struct sockaddr*)&addr, addr_size) < 0) {
         SYSCALL_ERROR("bind");
