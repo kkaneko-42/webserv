@@ -39,6 +39,9 @@ std::string HttpResponse::statusMsg( Status status ) {
         case CREATED:
             msg = "Created";
             break;
+        case SEE_OTHER:
+            msg = "See Other";
+            break;
         case BAD_REQUEST:
             msg = "Bad Request";
             break;
@@ -119,6 +122,18 @@ HttpResponse HttpResponse::createDirListingResponse( const HttpRequest& req ) {
     HttpResponse resp;
     resp.setBody(res_body);
     resp.addHeader("Content-Length", std::to_string(res_body.size()));
+
+    return (resp);
+}
+
+HttpResponse HttpResponse::createRedirectionResponse(
+    Status status,
+    const std::string& redirect_path )
+{
+    HttpResponse resp;
+
+    resp.setStatus(status);
+    resp.addHeader("Location", redirect_path);
 
     return (resp);
 }
