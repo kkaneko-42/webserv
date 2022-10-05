@@ -14,13 +14,6 @@ HttpResponse GET::execute( const HttpRequest& req ) {
         );
     }
 
-    if (location.return_path != "") {
-        return HttpResponse::createRedirectionResponse(
-            HttpResponse::Status::SEE_OTHER,
-            location.return_path
-        );
-    }
-
     if (pathIsDir(path)) {
         if (location.index != "") {
             path += location.index;

@@ -34,6 +34,11 @@ int RecieveRequestEvent::handler( void ) {
         resp = HttpResponse::createErrorResponse(HttpResponse::Status::NOT_FOUND);
     } else if (req.locationMatching()) { // location matching
         resp = HttpResponse::createErrorResponse(HttpResponse::Status::NOT_FOUND, req.getHostInfo());
+    } else if (req.getLocationInfo().return_path != "") {
+        resp = HttpResponse::createRedirectionResponse(
+            HttpResponse::Status::SEE_OTHER,
+            req.getLocationInfo().return_path
+        );
     } else {
         resp = req.getMethod()->execute(req);
     }
