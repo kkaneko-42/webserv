@@ -12,7 +12,9 @@ int SendResponseEvent::handler( void ) {
     send(client_sd_, resp_str.c_str(), resp_str.size(), 0);
 
     server_.removeCachedResponse(client_sd_);
-    close(client_sd_);
+    if (close(client_sd_) < 0) {
+        perror("close");
+    }
     client_sd_ = CLOSED_FD;
 
     return (0);
