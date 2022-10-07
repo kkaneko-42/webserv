@@ -139,7 +139,7 @@ int HttpRequest::hostMatching( const std::vector<ServerInfo>& servers_info ) {
     for (size_t i = 0; i < servers_info.size(); ++i) {
         ServerInfo info = servers_info[i];
         const std::string listen_str =
-            info.listen.addr + ":" + std::to_string(info.listen.port);
+            info.listen.addr + ":" + sizeToString(info.listen.port);
 
         if ((hostname == listen_str) || (hostname_resolved == listen_str)) {
             host_info_ = info;

@@ -15,7 +15,7 @@ void HttpResponse::addHeader( const std::string& key, const std::string& value )
 std::string HttpResponse::marshal( void ) const {
     std::string str = "";
 
-    str += "HTTP/" + version_ + " " + std::to_string(status_) + " " + statusMsg(status_) + "\r\n";
+    str += "HTTP/" + version_ + " " + sizeToString(status_) + " " + statusMsg(status_) + "\r\n";
     for (size_t i = 0; i < headers_.size(); ++i) {
         std::string key = headers_[i].first;
         std::string value = headers_[i].second;
@@ -82,7 +82,7 @@ HttpResponse HttpResponse::createErrorResponse( Status status, const ServerInfo&
 
     resp.setStatus(status);
     resp.setBody(page_content);
-    resp.addHeader("Content-Length", std::to_string(page_content.size()));
+    resp.addHeader("Content-Length", sizeToString(page_content.size()));
 
     return (resp);
 }
@@ -99,7 +99,7 @@ HttpResponse HttpResponse::createErrorResponse( Status status ) {
 
     HttpResponse resp;
     resp.setStatus(status);
-    resp.addHeader("Content-Length", std::to_string(default_page_content.size()));
+    resp.addHeader("Content-Length", sizeToString(default_page_content.size()));
     resp.setBody(default_page_content);
 
     return (resp);
@@ -121,7 +121,7 @@ HttpResponse HttpResponse::createDirListingResponse( const HttpRequest& req ) {
 
     HttpResponse resp;
     resp.setBody(res_body);
-    resp.addHeader("Content-Length", std::to_string(res_body.size()));
+    resp.addHeader("Content-Length", sizeToString(res_body.size()));
 
     return (resp);
 }
