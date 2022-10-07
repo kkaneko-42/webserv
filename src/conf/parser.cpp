@@ -1,4 +1,5 @@
 #include "Config.hpp"
+#include "../utils/utils.hpp"
 #include <vector>
 #include <string>
 #include <cstdlib>
@@ -65,7 +66,7 @@ int Config::server_conf(
         // now: it->str == ";"
         ++it;
     } else if (item == "client_max_body_size") {
-        serversInfo.rbegin()->client_max_body_size = stoul(it->str);
+        serversInfo.rbegin()->client_max_body_size = stringToSize(it->str);
         ++it;
         // now: it->str == ";"
         ++it;
@@ -106,7 +107,7 @@ int Config::listen_conf(
     // assuming addr:port
     std::string::size_type colon_pos = it->str.find(":");
     serversInfo.rbegin()->listen.addr = it->str.substr(0, colon_pos);
-    serversInfo.rbegin()->listen.port = std::stoi(it->str.substr(colon_pos + 1));
+    serversInfo.rbegin()->listen.port = stringToInt(it->str.substr(colon_pos + 1));
 
     // now: it->str == addr:port
     ++it;
@@ -127,7 +128,7 @@ int Config::error_page_conf(
     }
     error_page_html = it->str;
     while (err_status < it) {
-        serversInfo.rbegin()->error_pages_map[stoi(err_status->str)] = error_page_html;
+        serversInfo.rbegin()->error_pages_map[stringToInt(err_status->str)] = error_page_html;
         ++err_status;
     }
     // now: it->str == "/40x.html"

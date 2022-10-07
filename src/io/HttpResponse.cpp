@@ -93,7 +93,7 @@ HttpResponse HttpResponse::createErrorResponse( Status status ) {
     "<html><head>\r\n"
     "<title>An error occurred.</title>\r\n"
     "</head><body>\r\n"
-    "<h1>" + HttpResponse::statusMsg(status) + "</h1>\r\n"
+    "<h1>" + statusMsg(status) + "</h1>\r\n"
     "<p>The requested URL was not found on this server.</p>\r\n"
     "</body></html>\r\n";
 

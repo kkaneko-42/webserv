@@ -7,7 +7,7 @@ HttpResponse DELETE::execute( const HttpRequest& req ) {
 
     if (!isMethodAllowed("DELETE", req.getLocationInfo())) {
         return HttpResponse::createErrorResponse(
-            HttpResponse::Status::METHOD_NOT_ALLOWED,
+            HttpResponse::METHOD_NOT_ALLOWED,
             host_info
         );
     }
@@ -15,7 +15,7 @@ HttpResponse DELETE::execute( const HttpRequest& req ) {
     if (unlink(req.getPath().c_str()) < 0) {
         // TODO: support multiple errno
         return HttpResponse::createErrorResponse(
-            HttpResponse::Status::NOT_FOUND,
+            HttpResponse::NOT_FOUND,
             host_info
         );
     }

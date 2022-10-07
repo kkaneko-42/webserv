@@ -4,6 +4,7 @@
 #include "../methods/HttpMethod.hpp"
 #include <cassert>
 #include "ChunkParser.hpp"
+#include <typeinfo>
 
 template <typename T>
 static void printVector(const std::vector<T>& v) {

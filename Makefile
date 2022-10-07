@@ -1,7 +1,7 @@
 NAME = webserv
 
 CXX = c++
-CXXFLAGS = -g #-Wall -Wextra -Werror # -std=c++98
+CXXFLAGS = -g -std=c++98 #-Wall -Wextra -Werror 
 DEPFLAGS = -MMD -MP
 
 SRCS = $(wildcard src/*.cpp src/*/*.cpp)

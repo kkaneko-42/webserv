@@ -9,7 +9,7 @@ HttpResponse GET::execute( const HttpRequest& req ) {
 
     if (!isMethodAllowed("GET", location)) {
         return HttpResponse::createErrorResponse(
-            HttpResponse::Status::METHOD_NOT_ALLOWED,
+            HttpResponse::METHOD_NOT_ALLOWED,
             host_info
         );
     }
@@ -31,7 +31,7 @@ HttpResponse GET::execute( const HttpRequest& req ) {
     std::string content;
     if (loadFile(path, content)) {
         return HttpResponse::createErrorResponse(
-            HttpResponse::Status::NOT_FOUND,
+            HttpResponse::NOT_FOUND,
             host_info
         );
     }

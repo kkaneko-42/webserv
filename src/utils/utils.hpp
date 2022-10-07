@@ -12,5 +12,7 @@ std::vector<std::string> splitString( const std::string &str, const std::string&
 std::string toLowerString( const std::string& str );
 std::string trimString( const std::string& str );
 std::string sizeToString( size_t n );
+int stringToInt( const std::string& str );
+size_t stringToSize( const std::string& str );
 
 #endif

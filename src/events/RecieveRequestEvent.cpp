@@ -30,7 +30,7 @@ int RecieveRequestEvent::handler( void ) {
         std::cerr << e.what() << std::endl;
         server_.cacheResponse(
             client_sd_,
-            HttpResponse::createErrorResponse(HttpResponse::Status::INTERNAL_SERVER_ERROR)
+            HttpResponse::createErrorResponse(HttpResponse::INTERNAL_SERVER_ERROR)
         );
         return (1);
     }
@@ -41,7 +41,7 @@ int RecieveRequestEvent::handler( void ) {
         server_.cacheResponse(
             client_sd_,
             HttpResponse::createErrorResponse(
-                HttpResponse::Status::BAD_REQUEST
+                HttpResponse::BAD_REQUEST
             )
         );
         return (1);
@@ -53,7 +53,7 @@ int RecieveRequestEvent::handler( void ) {
         server_.cacheResponse(
             client_sd_,
             HttpResponse::createErrorResponse(
-                HttpResponse::Status::NOT_FOUND
+                HttpResponse::NOT_FOUND
             )
         );
         return (1);
@@ -64,7 +64,7 @@ int RecieveRequestEvent::handler( void ) {
         server_.cacheResponse(
             client_sd_,
             HttpResponse::createErrorResponse(
-                HttpResponse::Status::NOT_FOUND,
+                HttpResponse::NOT_FOUND,
                 req.getHostInfo()
             )
         );
@@ -76,7 +76,7 @@ int RecieveRequestEvent::handler( void ) {
         server_.cacheResponse(
             client_sd_,
             HttpResponse::createErrorResponse(
-                HttpResponse::Status::PAYLOAD_TOO_LARGE
+                HttpResponse::PAYLOAD_TOO_LARGE
             )
         );
         return (1);
@@ -88,7 +88,7 @@ int RecieveRequestEvent::handler( void ) {
             server_.cacheResponse(
                 client_sd_,
                 HttpResponse::createErrorResponse(
-                    HttpResponse::Status::BAD_REQUEST,
+                    HttpResponse::BAD_REQUEST,
                     req.getHostInfo()
                 )
             );
@@ -101,7 +101,7 @@ int RecieveRequestEvent::handler( void ) {
         server_.cacheResponse(
             client_sd_,
             HttpResponse::createRedirectionResponse(
-                HttpResponse::Status::SEE_OTHER,
+                HttpResponse::SEE_OTHER,
                 req.getLocationInfo().return_path
             )
         );

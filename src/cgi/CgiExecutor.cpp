@@ -76,7 +76,7 @@ HttpResponse CgiExecutor::execute( const HttpRequest& req ) const {
     if ((pipe(fd_cgi_to_server) < 0) || (pipe(fd_server_to_cgi) < 0)) {
         perror("pipe");
         return HttpResponse::createErrorResponse(
-            HttpResponse::Status::INTERNAL_SERVER_ERROR,
+            HttpResponse::INTERNAL_SERVER_ERROR,
             host_info
         );
     }
@@ -89,7 +89,7 @@ HttpResponse CgiExecutor::execute( const HttpRequest& req ) const {
     if (pid < 0) {
         perror("fork");
         return HttpResponse::createErrorResponse(
-            HttpResponse::Status::INTERNAL_SERVER_ERROR,
+            HttpResponse::INTERNAL_SERVER_ERROR,
             host_info
         );
     } else if (pid == 0) {
@@ -124,7 +124,7 @@ HttpResponse CgiExecutor::execute( const HttpRequest& req ) const {
     int status = WEXITSTATUS(status_ptr);
     if (status != 0) {
         return HttpResponse::createErrorResponse(
-            HttpResponse::Status::BAD_REQUEST,
+            HttpResponse::BAD_REQUEST,
             host_info
         );
     }
@@ -135,7 +135,7 @@ HttpResponse CgiExecutor::execute( const HttpRequest& req ) const {
         ssize_t read_size = read(fd_cgi_to_server[0], buf, BUF_SIZE - 1);
         if (read_size < 0) {
             return HttpResponse::createErrorResponse(
-                HttpResponse::Status::BAD_REQUEST,
+                HttpResponse::BAD_REQUEST,
                 host_info
             );
         }
