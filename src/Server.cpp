@@ -86,7 +86,8 @@ void Server::listenSocket( int sock ) const {
 
 void Server::registerDescriptor( int sock, short events ) {
     if (nfds_ == MAX_POLL_FDS) {
-        RUNTIME_ERROR("fds is full");
+        std::cerr << "fds is full" << std::endl;
+        return;
     }
 
     fds_[nfds_].fd = sock;
