@@ -27,8 +27,11 @@ int HttpRequest::parse( const std::string& request ) {
     const std::string header_body_delim = "\r\n\r\n";
 
     std::string::size_type empty_line_pos = request.find(header_body_delim);
-    body_ = request.substr(empty_line_pos + header_body_delim.size());
+    if (empty_line_pos == std::string::npos) {
+        return (1);
+    }
 
+    body_ = request.substr(empty_line_pos + header_body_delim.size());\
     std::string headers = request.substr(0, empty_line_pos);
     std::vector<std::string> rows = splitString(headers, "\r\n");
     
