@@ -149,10 +149,10 @@ std::vector<Event*> Server::getRaisedEvents( void ) {
 
         if (this->isListeningDescriptor(fds_[i].fd)) {
             events.push_back(new NewConnectionEvent(fds_[i].fd, *this));
-        } else if ((revents & POLLIN) != 0) {
-            events.push_back(new RecieveRequestEvent(fds_[i].fd, *this));
         } else if ((revents & POLLOUT) != 0 && resp_cache_.count(fds_[i].fd) != 0) {
             events.push_back(new SendResponseEvent(fds_[i].fd, *this));
+        } else if ((revents & POLLIN) != 0) {
+            events.push_back(new RecieveRequestEvent(fds_[i].fd, *this));
         }
     }
 
