@@ -90,7 +90,7 @@ ssize_t ChunkParser::chunk_size( iterator& it ) {
 }
 
 int ChunkParser::chunk_data( iterator& it, ssize_t chunk_size, std::string& res ) {
-    if (it->size() != chunk_size) {
+    if (it->size() != static_cast<size_t>(chunk_size)) {
         return 1;
     }
 

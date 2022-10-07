@@ -89,7 +89,7 @@ int Config::server_conf(
         ret = 1;
     }
 
-    return (0);
+    return (ret);
 }
 
 // 127.0.0.1;
