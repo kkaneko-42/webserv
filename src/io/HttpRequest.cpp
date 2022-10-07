@@ -25,10 +25,6 @@ HttpRequest::~HttpRequest( void ) {
 int HttpRequest::parse( const std::string& request ) {
     const std::string header_body_delim = "\r\n\r\n";
 
-    std::cout << "request {" << std::endl;
-    std::cout << request << std::endl;
-    std::cout << "}" << std::endl;
-
     std::string::size_type empty_line_pos = request.find(header_body_delim);
     body_ = request.substr(empty_line_pos + header_body_delim.size());
 
@@ -42,6 +38,10 @@ int HttpRequest::parse( const std::string& request ) {
     if (parseHeader(rows)) {
         return (1);
     }
+
+    std::cout << "request {" << std::endl;
+    printRequest();
+    std::cout << "}" << std::endl;
 
     return (0);
 }
@@ -65,22 +65,29 @@ int HttpRequest::parseTop( const std::string& top_row ) {
 
 int HttpRequest::parseHeader( const std::vector<std::string>& headers ) {
     for (size_t i = 0; i < headers.size(); ++i) {
-        std::string::size_type delim_pos = headers[i].find(": ");
-        std::string key = headers[i].substr(0, delim_pos);
-        std::string value = headers[i].substr(delim_pos + 2);
+        std::string::size_type delim_pos = headers[i].find(":");
+        std::string key = toLowerString(headers[i].substr(0, delim_pos));
+        std::string value = toLowerString(trimString(headers[i].substr(delim_pos + 2)));
 
-        if (key == "Accept") {
+        if (key == "accept") {
             headers_.accept = splitString(value, ", ");
-        } else if (key == "Accept-Language") {
+        } else if (key == "accept-language") {
             headers_.accept_language = value;
-        } else if (key == "Accept-Encoding") {
+        } else if (key == "accept-encoding") {
             headers_.accept_encoding = splitString(value, ", ");
-        } else if (key == "User-Agent") {
+        } else if (key == "user-agent") {
             headers_.user_agent = value;
-        } else if (key == "Host") {
+        } else if (key == "host") {
             headers_.host = value;
-        } else if (key == "Connection") {
+        } else if (key == "connection") {
             headers_.connection = value;
+        } else if (key == "transfer-encoding") {
+            std::set<std::string> st;
+            std::vector<std::string> splitedValue = splitString(value, ", ");
+            for (size_t i = 0; i < splitedValue.size(); ++i) {
+                st.insert(toLowerString(splitedValue[i]));
+            }
+            headers_.transfer_encoding = st;
         }
     }
 
@@ -88,7 +95,7 @@ int HttpRequest::parseHeader( const std::vector<std::string>& headers ) {
 }
 
 void HttpRequest::printRequest( void ) const {
-    std::cout << "method: " << typeid(method_).name() << std::endl;
+    std::cout << "method: " << typeid(*method_).name() << std::endl;
     std::cout << "path: " << path_ << std::endl;
     std::cout << "version: " << version_ << std::endl;
     std::cout << "accept: ";
@@ -97,6 +104,14 @@ void HttpRequest::printRequest( void ) const {
     std::cout << "user-agent: " << headers_.user_agent << std::endl;
     std::cout << "host: " << headers_.host << std::endl;
     std::cout << "connection: " << headers_.connection << std::endl;
+    
+    std::cout << "transfer-encoding: [";
+    std::set<std::string>::iterator it;
+    for (it = headers_.transfer_encoding.begin(); it != headers_.transfer_encoding.end(); ++it) {
+        std::cout << *it << ", ";
+    }
+    std::cout << "]" << std::endl;
+
     std::cout << "==== body ===" << std::endl;
     std::cout << body_;
 }
@@ -184,4 +199,23 @@ std::string HttpRequest::getHostName( bool flag_resolve ) const {
     }
 
     return (hostname);
+}
+
+bool HttpRequest::isChunked( void ) const {
+    return (headers_.transfer_encoding.count("transfer-encoding") != 0);
+}
+
+int HttpRequest::unchunk( void ) const {
+    if (!this->isChuncked()) {
+        return 1;
+    }
+
+    std::string unchunked;
+    try {
+        unchunked = ChunckParser::parse(body_);
+    } catch (const std::exception& e) {
+        return (1);
+    }
+
+    return unchunked;
 }

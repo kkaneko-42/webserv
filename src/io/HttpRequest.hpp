@@ -19,6 +19,7 @@ class HttpRequest {
             std::string                 user_agent;
             std::string                 host; // http1.1では唯一必須
             std::string                 connection;
+            std::set<std::string>       transfer_encoding;
         };
 
         HttpRequest( void );
@@ -31,6 +32,8 @@ class HttpRequest {
         LocationInfo getLocationInfo( void ) const { return location_info_; }
         HttpMethod* getMethod( void ) const { return method_; }
         std::string getBody( void ) const { return body_; }
+        bool isChunked( void ) const;
+        int unchunk( void );
         int parse( const std::string& request );
         int hostMatching( const std::vector<ServerInfo>& servers_info );
         int locationMatching( void );

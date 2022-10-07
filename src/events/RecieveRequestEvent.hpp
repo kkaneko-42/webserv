@@ -14,6 +14,7 @@ class RecieveRequestEvent : public Event {
         int handler( void );
 
     private:
+        std::string recvRequest( void ) const;
         int client_sd_;
         Server& server_;
 };

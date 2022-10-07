@@ -1,5 +1,6 @@
 #ifndef CONFIG_HPP
 #define CONFIG_HPP
+#define MAX_RAW_REQUEST_SIZE 4096
 
 #include <vector>
 #include <map>

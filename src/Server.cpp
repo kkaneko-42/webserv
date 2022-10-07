@@ -39,6 +39,7 @@ int Server::Run( void ) {
     }
 
     while (true) {
+        // usleep(1000);
         std::vector<Event*> events = waitForEvents();
         for (size_t i = 0; i < events.size(); ++i) {
             events[i]->handler();
