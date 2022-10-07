@@ -3,6 +3,7 @@
 #include "../utils/utils.hpp"
 #include "../methods/HttpMethod.hpp"
 #include <cassert>
+#include "ChunkParser.hpp"
 
 template <typename T>
 static void printVector(const std::vector<T>& v) {
@@ -202,20 +203,21 @@ std::string HttpRequest::getHostName( bool flag_resolve ) const {
 }
 
 bool HttpRequest::isChunked( void ) const {
-    return (headers_.transfer_encoding.count("transfer-encoding") != 0);
+    return (headers_.transfer_encoding.count("chunked") != 0);
 }
 
-int HttpRequest::unchunk( void ) const {
-    if (!this->isChuncked()) {
+int HttpRequest::unchunk( void ) {
+    if (!this->isChunked()) {
         return 1;
     }
 
     std::string unchunked;
     try {
-        unchunked = ChunckParser::parse(body_);
+        unchunked = ChunkParser::parse(body_);
     } catch (const std::exception& e) {
-        return (1);
+        return 1;
     }
 
-    return unchunked;
+    body_ = unchunked;
+    return 0;
 }

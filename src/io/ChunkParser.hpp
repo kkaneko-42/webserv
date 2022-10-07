@@ -2,13 +2,14 @@
 #define CHUNK_PARSER_HPP
 
 #include <vector>
-#include <exception>
+#include <stdexcept>
 #include <string>
+#include <iostream>
 #include "../utils/utils.hpp"
 
 class ChunkParser {
     public:
-        typedef typename std::vector<std::string>::iterator iterator;
+        typedef typename std::vector<std::string>::const_iterator iterator;
         
         static const ssize_t MAX_CHUNK_SIZE = 0xffff;
         static std::string parse( const std::string& chunked );

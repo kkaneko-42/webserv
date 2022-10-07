@@ -1,5 +1,14 @@
 #include "ChunkParser.hpp"
 
+template <typename T>
+static void printVector(std::vector<T> v) {
+    std::cout << "{" << std::endl;;
+    for (size_t i = 0; i < v.size(); i++) {
+        std::cout << "  [" << i << "] " << v[i] << std::endl;
+    }
+    std::cout << "}" << std::endl;
+}
+
 static bool isHexString( const std::string& str ) {
     const std::string lower_str = toLowerString(str);
 
@@ -35,16 +44,26 @@ static ssize_t strToHex( const std::string& str ) {
     return (res);
 }
 
-std::string ChunckParser::parse( const std::string& chunked ) {
-    const std::vector<std::string> tokens = splitString(chunked, "\r\n\r\n");
+/*
+c\r\n
+hello, world\r\n
+0\r\n
+\r\n
+
+=> ["c", "hello, world", "0", "", ""]
+*/
+std::string ChunkParser::parse( const std::string& chunked ) {
+    const std::vector<std::string> tokens = splitString(chunked, "\r\n");
+    std::cout << "tokens: " << std::endl;
+    printVector(tokens);
     std::string res;
 
-    std::vector<std::string>::iterator it = tokens.begin();
+    std::vector<std::string>::const_iterator it = tokens.begin();
     while (it != tokens.end()) {
-        ssize_t chunk_size = chunk_size(it);
-        if (chunk_size < 0) {
+        ssize_t size = chunk_size(it);
+        if (size < 0) {
             break;
-        } else if (chunk_size == 0) {
+        } else if (size == 0) {
             if (it == tokens.end() || *it != "") {
                 break;
             }
@@ -58,7 +77,7 @@ std::string ChunckParser::parse( const std::string& chunked ) {
         if (it == tokens.end()) {
             break;
         }
-        if (chunk_data(it, chunk_size, res)) {
+        if (chunk_data(it, size, res)) {
             break;
         }
     }
@@ -71,7 +90,7 @@ ssize_t ChunkParser::chunk_size( iterator& it ) {
 }
 
 int ChunkParser::chunk_data( iterator& it, ssize_t chunk_size, std::string& res ) {
-    if (*it.size() != chunk_size) {
+    if (it->size() != chunk_size) {
         return 1;
     }
 
