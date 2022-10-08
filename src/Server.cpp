@@ -76,6 +76,8 @@ void Server::bindSocket( int sock, const ServerInfo& info ) const {
     if (bind(sock, (struct sockaddr*)&addr, addr_size) < 0) {
         SYSCALL_ERROR("bind");
     }
+
+    sd_addr_map_[sock] = std::pair<std::string, int>(info.listen.addr, info.listen.port);
 }
 
 void Server::listenSocket( int sock ) const {

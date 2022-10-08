@@ -64,6 +64,7 @@ class Server {
         struct pollfd fds_[MAX_POLL_FDS];
         nfds_t nfds_;
         Config conf_;
+        std::map< int, std::pair<std::string, int> > sd_addr_map_;
 };
 
 #endif
