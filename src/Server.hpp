@@ -51,6 +51,7 @@ class Server {
         void cacheResponse( int client_sd, const HttpResponse& resp );
         HttpResponse getCachedResponse( int client_sd );
         void removeCachedResponse( int client_sd );
+        bool isListenedAddress( const std::pair<std::string, int>& addr );
 
         Config getConf( void ) const { return conf_; }
 
@@ -69,7 +70,6 @@ class Server {
         nfds_t nfds_;
         Config conf_;
 
-        std::set< std::pair<std::string, int> > listen_addr_set_;
         std::map< int, std::pair<std::string, int> > sd_listen_map_;
 };
 

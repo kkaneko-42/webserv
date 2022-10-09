@@ -28,11 +28,10 @@ int Server::Run( void ) {
     for (size_t i = 0; i < servers_info.size(); ++i) {
         std::pair<std::string, int> listen_addr = \
             std::pair<std::string, int>(servers_info[i].listen.addr, servers_info[i].listen.port);
-        
-        if (listen_addr_set_.count(listen_addr)) {
+
+        if (this->isListenedAddress(listen_addr)) {
             continue;
         }
-        listen_addr_set_.insert(listen_addr);
 
         try {
             int sock = createSocket();
@@ -187,4 +186,17 @@ void Server::removeCachedResponse( int client_sd ) {
 
 HttpResponse Server::getCachedResponse( int client_sd ) {
     return resp_cache_[client_sd];
+}
+
+bool Server::isListenedAddress( const std::pair<std::string, int>& addr ) {
+    std::map< int, std::pair<std::string, int> >::iterator it;
+
+    for (it = sd_listen_map_.begin(); it != sd_listen_map_.end(); ++it) {        
+        std::pair<std::string, int> listened_addr = (*it).second;
+        if (addr == listened_addr) {
+            return true;
+        }
+    }
+
+    return false;
 }
