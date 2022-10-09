@@ -58,6 +58,7 @@ class Server {
         const std::pair<std::string, int>& getListenSdToAddr( int sd );
         const std::pair<std::string, int>& getClientSdToAddr( int sd );
         void setClientSdToAddr( int sd, std::pair<std::string, int> addr );
+        void deleteClientSdToAddr( int sd );
 
         const static size_t MAX_POLL_FDS = 200;
         const static int BACKLOG = 1024;
