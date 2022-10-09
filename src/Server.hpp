@@ -64,6 +64,8 @@ class Server {
         struct pollfd fds_[MAX_POLL_FDS];
         nfds_t nfds_;
         Config conf_;
+
+        std::set< std::pair<std::string, int> > listen_addr_set_;
 };
 
 #endif
