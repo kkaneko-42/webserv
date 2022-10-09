@@ -211,6 +211,6 @@ void Server::setClientSdToAddr( int sd, std::pair<std::string, int> addr ) {
     client_sd_to_addr_[sd] = addr;
 }
 
-void Server::deleteClientSdToAddr( int sd ) {
+void Server::removeClientSdToAddr( int sd ) {
     client_sd_to_addr_.erase(sd);
 }
