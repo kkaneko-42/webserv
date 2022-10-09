@@ -35,7 +35,10 @@ class HttpRequest {
         bool isChunked( void ) const;
         int unchunk( void );
         int parse( const std::string& request );
-        int hostMatching( const std::vector<ServerInfo>& servers_info );
+        int hostMatching(
+            const std::vector<ServerInfo>& servers_info,
+            std::pair< std::string, int > listen_addr
+            );
         int locationMatching( void );
         void printRequest( void ) const;
 

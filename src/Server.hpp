@@ -54,6 +54,10 @@ class Server {
 
         Config getConf( void ) const { return conf_; }
 
+        std::map< int, std::pair<std::string, int> >& getSdListenMap() {
+            return sd_listen_map_;
+        };
+
         const static size_t MAX_POLL_FDS = 200;
         const static int BACKLOG = 1024;
         const static int TIMEOUT = -1; // infinity
@@ -66,6 +70,7 @@ class Server {
         Config conf_;
 
         std::set< std::pair<std::string, int> > listen_addr_set_;
+        std::map< int, std::pair<std::string, int> > sd_listen_map_;
 };
 
 #endif

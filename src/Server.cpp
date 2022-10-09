@@ -41,6 +41,7 @@ int Server::Run( void ) {
             this->listenSocket(sock);
             this->registerDescriptor(sock, POLLIN);
             this->addListeningDescriptor(sock);
+            sd_listen_map_[sock] = listen_addr;
         } catch (std::exception &e) {
             std::cerr << e.what() << std::endl;
             return 1;
