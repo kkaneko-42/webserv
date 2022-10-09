@@ -1,8 +1,7 @@
 #include "Server.hpp"
 
 Server::Server( void )
-: listening_fds_(std::set<int>()),
-resp_cache_(std::map<int, HttpResponse>()),
+: resp_cache_(std::map<int, HttpResponse>()),
 nfds_(0), conf_(Config())
 {
     memset(fds_, 0, sizeof(fds_));
@@ -39,8 +38,7 @@ int Server::Run( void ) {
             this->bindSocket(sock, servers_info[i]);
             this->listenSocket(sock);
             this->registerDescriptor(sock, POLLIN);
-            this->addListeningDescriptor(sock);
-            listen_sd_to_addr_[sock] = listen_addr;
+            this->setListenSdToAddr(sock, listen_addr);
         } catch (std::exception &e) {
             std::cerr << e.what() << std::endl;
             return 1;
@@ -168,12 +166,8 @@ std::vector<Event*> Server::getRaisedEvents( void ) {
     return events;
 }
 
-void Server::addListeningDescriptor( int sock ) {
-    listening_fds_.insert(sock);
-}
-
 bool Server::isListeningDescriptor( int sock ) const {
-    return (listening_fds_.count(sock) > 0);
+    return (listen_sd_to_addr_.count(sock) > 0);
 }
 
 void Server::cacheResponse( int client_sd, const HttpResponse& resp ) {
@@ -208,6 +202,10 @@ const std::pair<std::string, int>& Server::getListenSdToAddr( int sd ) {
 const std::pair<std::string, int>& Server::getClientSdToAddr( int sd ) {
     return client_sd_to_addr_[sd];
 };
+
+void Server::setListenSdToAddr( int sd, std::pair<std::string, int> addr ) {
+    listen_sd_to_addr_[sd] = addr;
+}
 
 void Server::setClientSdToAddr( int sd, std::pair<std::string, int> addr ) {
     client_sd_to_addr_[sd] = addr;
