@@ -55,9 +55,9 @@ class Server {
 
         Config getConf( void ) const { return conf_; }
 
-        std::map< int, std::pair<std::string, int> >& getSdListenMap() {
-            return sd_listen_map_;
-        };
+        const std::pair<std::string, int>& getListenSdToAddr( int sd );
+        const std::pair<std::string, int>& getClientSdToAddr( int sd );
+        void setClientSdToAddr( int sd, std::pair<std::string, int> addr );
 
         const static size_t MAX_POLL_FDS = 200;
         const static int BACKLOG = 1024;
@@ -70,7 +70,8 @@ class Server {
         nfds_t nfds_;
         Config conf_;
 
-        std::map< int, std::pair<std::string, int> > sd_listen_map_;
+        std::map< int, std::pair<std::string, int> > client_sd_to_addr_;
+        std::map< int, std::pair<std::string, int> > listen_sd_to_addr_;
 };
 
 #endif

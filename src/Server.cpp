@@ -40,7 +40,7 @@ int Server::Run( void ) {
             this->listenSocket(sock);
             this->registerDescriptor(sock, POLLIN);
             this->addListeningDescriptor(sock);
-            sd_listen_map_[sock] = listen_addr;
+            listen_sd_to_addr_[sock] = listen_addr;
         } catch (std::exception &e) {
             std::cerr << e.what() << std::endl;
             return 1;
@@ -191,7 +191,7 @@ HttpResponse Server::getCachedResponse( int client_sd ) {
 bool Server::isListenedAddress( const std::pair<std::string, int>& addr ) {
     std::map< int, std::pair<std::string, int> >::iterator it;
 
-    for (it = sd_listen_map_.begin(); it != sd_listen_map_.end(); ++it) {        
+    for (it = listen_sd_to_addr_.begin(); it != listen_sd_to_addr_.end(); ++it) {        
         std::pair<std::string, int> listened_addr = (*it).second;
         if (addr == listened_addr) {
             return true;
@@ -199,4 +199,16 @@ bool Server::isListenedAddress( const std::pair<std::string, int>& addr ) {
     }
 
     return false;
+}
+
+const std::pair<std::string, int>& Server::getListenSdToAddr( int sd ) {
+    return listen_sd_to_addr_[sd];
+};
+
+const std::pair<std::string, int>& Server::getClientSdToAddr( int sd ) {
+    return client_sd_to_addr_[sd];
+};
+
+void Server::setClientSdToAddr( int sd, std::pair<std::string, int> addr ) {
+    client_sd_to_addr_[sd] = addr;
 }

@@ -23,7 +23,7 @@ int NewConnectionEvent::handler( void ) {
         }
 
         server_.registerDescriptor(new_sd, POLLIN | POLLOUT);
-        server_.getSdListenMap()[new_sd] = server_.getSdListenMap()[listen_sd_];
+        server_.setClientSdToAddr(new_sd, server_.getListenSdToAddr(listen_sd_));
     }
 
     return (0);
