@@ -26,13 +26,13 @@ int Server::Run( void ) {
     std::vector<ServerInfo> servers_info = this->conf_.getServersInfo();
 
     for (size_t i = 0; i < servers_info.size(); ++i) {
-        std::pair<std::string, int> addr = \
+        std::pair<std::string, int> listen_addr = \
             std::pair<std::string, int>(servers_info[i].listen.addr, servers_info[i].listen.port);
         
-        if (listen_addr_set_.count(addr)) {
+        if (listen_addr_set_.count(listen_addr)) {
             continue;
         }
-        listen_addr_set_.insert(addr);
+        listen_addr_set_.insert(listen_addr);
 
         try {
             int sock = createSocket();
