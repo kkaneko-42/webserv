@@ -49,7 +49,8 @@ int RecieveRequestEvent::handler( void ) {
 
     // もしrequestをcacheする場合、以下はSendResponseEvent->hander内に記述
     // host matching
-    if (req.hostMatching(server_.getConf().getServersInfo())) {
+    std::pair< std::string, int > listen_addr = server_.getClientSdToAddr(client_sd_);
+    if (req.hostMatching(server_.getConf().getServersInfo(), listen_addr)) {
         server_.cacheResponse(
             client_sd_,
             HttpResponse::createErrorResponse(

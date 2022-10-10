@@ -9,7 +9,7 @@
 
 class ChunkParser {
     public:
-        typedef typename std::vector<std::string>::const_iterator iterator;
+        typedef std::vector<std::string>::const_iterator iterator;
         
         static const ssize_t MAX_CHUNK_SIZE = 0xffff;
         static std::string parse( const std::string& chunked );

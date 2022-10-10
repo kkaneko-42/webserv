@@ -15,6 +15,8 @@ int SendResponseEvent::handler( void ) {
     if (close(client_sd_) < 0) {
         perror("close");
     }
+
+    server_.removeClientSdToAddr(client_sd_);
     client_sd_ = CLOSED_FD;
 
     return (0);
