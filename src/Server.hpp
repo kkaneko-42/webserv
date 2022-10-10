@@ -45,25 +45,33 @@ class Server {
         std::vector<Event*> waitForEvents( void );
         std::vector<Event*> getRaisedEvents( void );
 
-        void addListeningDescriptor( int sock );
         bool isListeningDescriptor( int sock ) const;
 
         void cacheResponse( int client_sd, const HttpResponse& resp );
         HttpResponse getCachedResponse( int client_sd );
         void removeCachedResponse( int client_sd );
+        bool isListenedAddress( const std::pair<std::string, int>& addr );
 
         Config getConf( void ) const { return conf_; }
+
+        const std::pair<std::string, int>& getListenSdToAddr( int sd );
+        const std::pair<std::string, int>& getClientSdToAddr( int sd );
+        void setListenSdToAddr( int sd, std::pair<std::string, int> addr );
+        void setClientSdToAddr( int sd, std::pair<std::string, int> addr );
+        void removeClientSdToAddr( int sd );
 
         const static size_t MAX_POLL_FDS = 200;
         const static int BACKLOG = 1024;
         const static int TIMEOUT = -1; // infinity
 
     private:
-        std::set<int> listening_fds_;
         std::map<int, HttpResponse> resp_cache_;
         struct pollfd fds_[MAX_POLL_FDS];
         nfds_t nfds_;
         Config conf_;
+
+        std::map< int, std::pair<std::string, int> > client_sd_to_addr_;
+        std::map< int, std::pair<std::string, int> > listen_sd_to_addr_;
 };
 
 #endif

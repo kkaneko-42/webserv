@@ -72,7 +72,7 @@ int HttpRequest::parseHeader( const std::vector<std::string>& headers ) {
     for (size_t i = 0; i < headers.size(); ++i) {
         std::string::size_type delim_pos = headers[i].find(":");
         std::string key = toLowerString(headers[i].substr(0, delim_pos));
-        std::string value = toLowerString(trimString(headers[i].substr(delim_pos + 2)));
+        std::string value = toLowerString(trimString(headers[i].substr(delim_pos + 1)));
 
         if (key == "accept") {
             headers_.accept = splitString(value, ", ");
@@ -132,21 +132,57 @@ std::string HttpRequest::getUploadPath( void ) const {
     return (location_info_.save_folder + path_);
 }
 
-int HttpRequest::hostMatching( const std::vector<ServerInfo>& servers_info ) {
-    // get hostname (127.0.0.1:4242, example.com:4242, etc...)
-    const std::string hostname = this->getHostName();
-    const std::string hostname_resolved = this->getHostName(true);
+int HttpRequest::hostMatching( 
+    const std::vector<ServerInfo>& servers_info,
+    std::pair< std::string, int > listen_addr
+    )
+{
+    std::cout << "====== hostMatching ======" << std::endl;    
 
+    // Host: xxxxxxxxxxxx
+    const std::string hostname = this->getHostName();
+
+    std::string addr = listen_addr.first;
+    int port = listen_addr.second;
+
+    std::cout << "host: " << hostname << std::endl;
+    std::cout << "listen.addr: " << addr << std::endl;
+    std::cout << "listen.port: " << port << std::endl;
+
+    // server_name matching
+    std::cout << "@@@ server_name matching @@@" << std::endl;    
     for (size_t i = 0; i < servers_info.size(); ++i) {
         ServerInfo info = servers_info[i];
-        const std::string listen_str =
-            info.listen.addr + ":" + sizeToString(info.listen.port);
 
-        if ((hostname == listen_str) || (hostname_resolved == listen_str)) {
+        std::cout << "i=" << i << std::endl;
+        std::cout << "info.addr: " << info.listen.addr << std::endl;
+        std::cout << "info.port: " << info.listen.port << std::endl;
+
+        if (addr != info.listen.addr || port != info.listen.port) {
+            continue;
+        }
+        if (info.server_name == hostname) {
             host_info_ = info;
             return 0;
         }
     }
+
+    // default server matching
+    std::cout << "@@@ default server matching @@@" << std::endl;    
+    for (size_t i = 0; i < servers_info.size(); ++i) {
+        ServerInfo info = servers_info[i];
+
+        std::cout << "i=" << i << std::endl;
+        std::cout << "info.addr: " << info.listen.addr << std::endl;
+        std::cout << "info.port: " << info.listen.port << std::endl;
+
+        if (addr == info.listen.addr && port == info.listen.port) {
+            host_info_ = info;
+            return 0;
+        }
+    }
+
+    std::cout << "errrrrrrrrrrrrrrrrrrrrrrrr" << std::endl;
 
     return (1);
 }
@@ -179,30 +215,7 @@ int HttpRequest::locationMatching( void ) {
 std::string HttpRequest::getHostName( bool flag_resolve ) const {
     std::string hostname = headers_.host;
 
-    if (!flag_resolve) {
-        return (hostname);
-    }
-
-    // resolve "localhost"
-    std::string::size_type localhost_pos = hostname.find("localhost");
-    if (localhost_pos != std::string::npos) {
-        hostname.replace(
-            localhost_pos,
-            std::string("localhost").size(),
-            "127.0.0.1"
-        );
-    }
-
-    // resolve server_name
-    std::string::size_type server_name_pos = hostname.find(host_info_.server_name);
-    if (server_name_pos != std::string::npos) {
-        hostname.replace(
-            server_name_pos,
-            host_info_.server_name.size(),
-            host_info_.listen.addr
-        );
-    }
-
+    (void)flag_resolve;
     return (hostname);
 }
 
