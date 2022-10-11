@@ -151,8 +151,8 @@ int Config::location_conf(
     ++it;
     // now: it->str == <value>
     std::cout << "item: " << item << std::endl;
-    if (item == "root") {
-        info.root = it->str;
+    if (item == "alias") {
+        info.alias = it->str;
         ++it;
     } else if (item == "allow_methods") {
         while (it->str != ";") {

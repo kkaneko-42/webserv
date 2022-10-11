@@ -6,10 +6,10 @@ query_string_(""), is_executable_(false) {}
 
 // localhost:4242/hoge/a.py/b.py
 // location /hoge/ {
-//     root ./html/fuga
+//     alias ./html/fuga
 // }
 // location /c.py/ {
-//     root ./html;
+//     alias ./html;
 // }
 
 // getPath() => ./html/a.py/b.py?value=42
@@ -52,7 +52,7 @@ void CgiExecutor::init( const HttpRequest& req ) {
     std::string after = req_target.substr(before.size());
 
     // exec_path_ == ./html/a.py
-    exec_path_ = location.root + before;
+    exec_path_ = location.alias + before;
 
     // path_info_ == /b.py (EXPORT as PATH_INFO)
     // query_string_ == value=42 (EXPORT as QUERY_STRING)

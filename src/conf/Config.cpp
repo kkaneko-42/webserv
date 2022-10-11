@@ -63,7 +63,7 @@ void Config::debugConfig( void ) {
         for (it3 = it->locations_info_map.begin(); it3 != it->locations_info_map.end(); ++it3) {
             std::cout << "@@@ location " << it3->first << " info @@@" << std::endl;
             LocationInfo info = it3->second;
-            std::cout << "  root: " << info.root << std::endl;
+            std::cout << "  alias: " << info.alias << std::endl;
             std::cout << "  allow_methods: ";
             printVector(info.allow_methods);
             std::cout << "  return_path: " << info.return_path << std::endl;
