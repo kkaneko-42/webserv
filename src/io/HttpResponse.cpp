@@ -45,6 +45,9 @@ std::string HttpResponse::statusMsg( Status status ) {
         case BAD_REQUEST:
             msg = "Bad Request";
             break;
+        case FORBIDDEN:
+            msg = "Forbidden";
+            break;
         case NOT_FOUND:
             msg = "Not Found";
             break;

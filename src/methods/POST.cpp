@@ -7,9 +7,14 @@ HttpResponse POST::execute( const HttpRequest& req ) {
     const ServerInfo host_info = req.getHostInfo();
     const LocationInfo location = req.getLocationInfo();
 
-    if (!isMethodAllowed("POST", location) || !location.allow_file_upload) {
+    if (!isMethodAllowed("POST", location)) {
         return HttpResponse::createErrorResponse(
             HttpResponse::METHOD_NOT_ALLOWED,
+            host_info
+        );
+    } else if (!location.allow_file_upload) {
+        return HttpResponse::createErrorResponse(
+            HttpResponse::FORBIDDEN,
             host_info
         );
     }
@@ -25,7 +30,7 @@ HttpResponse POST::execute( const HttpRequest& req ) {
     if (!ofs) {
         perror("ofs");
         return HttpResponse::createErrorResponse(
-            HttpResponse::BAD_REQUEST,
+            HttpResponse::NOT_FOUND,
             host_info
         );
     }

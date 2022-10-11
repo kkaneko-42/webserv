@@ -129,7 +129,12 @@ std::string HttpRequest::getPath( void ) const {
 }
 
 std::string HttpRequest::getUploadPath( void ) const {
-    return (location_info_.save_folder + path_);
+    std::string filename = path_.substr(location_info_.location_path.size());
+    
+    if (location_info_.save_folder == "") {
+        return (location_info_.alias + filename);
+    }
+    return (location_info_.save_folder + filename);
 }
 
 int HttpRequest::hostMatching( 
