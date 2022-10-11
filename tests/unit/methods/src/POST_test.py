@@ -100,5 +100,10 @@ class PostTest(unittest.TestCase):
             actual = f.read()
             self.assertEqual("", actual)
 
+    # POSTが許可されていないlocation
+    def test_method_not_allowed(self):
+        r = requests.post(URL + "/deny_all/deny.txt", data="forbidden")
+        self.assertEqual(405, r.status_code)
+
 if __name__ == "__main__":
     unittest.main()

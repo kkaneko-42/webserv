@@ -41,7 +41,7 @@ class GetTest(unittest.TestCase):
 
     # GETが認められていないlocationをGET
     def test_not_allowed(self):
-        r = requests.get(URL + "/deny_all")
+        r = requests.get(URL + "/deny_all/")
 
         self.assertEqual(405, r.status_code)
         with open(ENV_DIR + "/40x.html") as f:
