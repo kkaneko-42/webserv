@@ -1,4 +1,5 @@
 #include "Server.hpp"
+#include <signal.h>
 
 int main( int ac, char** av ) {
     std::string conf_file;
@@ -14,6 +15,8 @@ int main( int ac, char** av ) {
         return (1);
     }
 
+    // TODO: SIGPIPEのignore
+    // signal(SIGPIPE, SIG_IGN);
     if (server.Run()) {
         return (1);
     }
