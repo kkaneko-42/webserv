@@ -10,18 +10,15 @@ int loadFile( const std::string& path, std::string& content ) {
         return (1);
     }
 
-    while(!ifs.eof()) {
-        if (!ifs) {
-            std::cerr << "read failed" << std::endl;
-            return (1);
-        }
-        std::getline(ifs, buf);
-        content += buf + "\r\n";
+    try {
+        content = std::string(
+            std::istreambuf_iterator<char>(ifs), 
+            std::istreambuf_iterator<char>()
+        );
+    } catch (const std::exception& e) {
+        std::cerr << e.what() << std::endl;
+        return (1);
     }
-    /*
-    res = std::string(std::istreambuf_iterator<char>(ifs), 
-                    std::istreambuf_iterator<char>());
-    */
 
     return (0);
 }
