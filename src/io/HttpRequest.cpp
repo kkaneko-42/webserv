@@ -124,8 +124,8 @@ void HttpRequest::printRequest( void ) const {
 std::string HttpRequest::getPath( void ) const {
     assert(path_.size() >= location_info_.location_path.size());
     std::string full_path = path_.substr(location_info_.location_path.size());
-    const std::string root = location_info_.root;
-    return root + full_path;
+    const std::string alias = location_info_.alias;
+    return alias + full_path;
 }
 
 std::string HttpRequest::getUploadPath( void ) const {
