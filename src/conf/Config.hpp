@@ -10,7 +10,7 @@
 /*
 server {
     listen  0.0.0.0:4242;
-    # root    ./html; <- いったんなしで実装。locationにかくのを必須にする。
+    # alias    ./html; <- いったんなしで実装。locationにかくのを必須にする。
     server_name     example.com;
     client_max_body_size 42;
 
@@ -19,19 +19,19 @@ server {
     error_page 400 401 402 403 404 ./40x.html;
 
     location / {
-        (必須)root ./html;
+        (必須)alias ./html;
         allow_methods GET POST DELETE;
         return https://www.google.com/; // redirection
         autoindex on; <- index.htmlがあればそれを返す、なければlsページを返す
         index index.html;
         allow_file_upload off;
-        save_folder ./upload; (なければrootにおく)
+        save_folder ./upload; (なければaliasにおく)
 
         allow_cgi_extensions py sh; (なければ無効)
     }
 
     location /hoge/ {
-        root ./html/hoge;
+        alias ./html/hoge;
         index index.html;
     }
 }
@@ -51,7 +51,7 @@ class Server;
 
 struct LocationInfo {
     std::string                 location_path;
-    std::string                 root;
+    std::string                 alias;
     std::vector<std::string>    allow_methods;
     std::string                 return_path;
     bool                        autoindex;
@@ -65,7 +65,7 @@ struct LocationInfo {
     /*
     // TODO: 初期化する
     LocationInfo()
-    : root(""), allow_methods(std::set<std::string>()), return_path(""),
+    : alias(""), allow_methods(std::set<std::string>()), return_path(""),
     autoindex(false), index(""), allow_file_upload(false), save_folder(""),
     allow_cgi_extensions(std::vector<std::string>())
     {}
