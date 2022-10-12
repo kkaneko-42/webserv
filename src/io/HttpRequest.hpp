@@ -45,6 +45,9 @@ class HttpRequest {
     private:
         int parseTop( const std::string& top_row );
         int parseHeader( const std::vector<std::string>& headers );
+        int validateHeaderLine( const std::string& header_line ) const;
+        int validateHeaderFieldName( const std::string& name ) const;
+        int validateHeaderFieldContent( const std::string& content ) const;
 
         HttpMethod* method_; // deletable(allocate in heap, or NULL)
         ServerInfo host_info_;

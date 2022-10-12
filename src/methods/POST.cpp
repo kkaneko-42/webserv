@@ -1,4 +1,5 @@
 #include "POST.hpp"
+#include "../cgi/CgiExecutor.hpp"
 #include <fstream>
 #include <ios>
 #include <unistd.h>
@@ -12,7 +13,15 @@ HttpResponse POST::execute( const HttpRequest& req ) {
             HttpResponse::METHOD_NOT_ALLOWED,
             host_info
         );
-    } else if (!location.allow_file_upload) {
+    }
+
+    CgiExecutor cgi;
+    cgi.init(req);
+    if (cgi.isExecutable()) {
+        return cgi.execute(req);
+    }
+
+    if (!location.allow_file_upload) {
         return HttpResponse::createErrorResponse(
             HttpResponse::FORBIDDEN,
             host_info

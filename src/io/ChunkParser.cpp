@@ -32,9 +32,9 @@ static ssize_t strToHex( const std::string& str ) {
 
     for (size_t i = 0; i < lower_str.size(); ++i) {
         if (isdigit(lower_str[i])) {
-            res = (res * 10) + lower_str[i] - '0';
+            res = (res * 0x10) + lower_str[i] - '0';
         } else {
-            res = (res * 10) + lower_str[i] - 'a' + 10;
+            res = (res * 0x10) + lower_str[i] - 'a' + 10;
         }
         if (res > ChunkParser::MAX_CHUNK_SIZE) {
             return -1;

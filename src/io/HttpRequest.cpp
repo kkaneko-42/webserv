@@ -35,7 +35,7 @@ int HttpRequest::parse( const std::string& request ) {
     body_ = request.substr(empty_line_pos + header_body_delim.size());
     std::string headers = request.substr(0, empty_line_pos);
     std::vector<std::string> rows = splitString(headers, "\r\n");
-    
+
     if (parseTop(rows[0])) {
         return (1);
     }
@@ -67,19 +67,23 @@ int HttpRequest::parseTop( const std::string& top_row ) {
     
     return (0);
 }
-
+// foo, , bar
 int HttpRequest::parseHeader( const std::vector<std::string>& headers ) {
     for (size_t i = 0; i < headers.size(); ++i) {
+        if (validateHeaderLine(headers[i])) {
+            return (1);
+        }
+
         std::string::size_type delim_pos = headers[i].find(":");
         std::string key = toLowerString(headers[i].substr(0, delim_pos));
         std::string value = toLowerString(trimString(headers[i].substr(delim_pos + 1)));
 
         if (key == "accept") {
-            headers_.accept = splitString(value, ", ");
+            headers_.accept = trimStringIter(splitString(value, ","));
         } else if (key == "accept-language") {
             headers_.accept_language = value;
         } else if (key == "accept-encoding") {
-            headers_.accept_encoding = splitString(value, ", ");
+            headers_.accept_encoding = trimStringIter(splitString(value, ","));
         } else if (key == "user-agent") {
             headers_.user_agent = value;
         } else if (key == "host") {
@@ -88,7 +92,7 @@ int HttpRequest::parseHeader( const std::vector<std::string>& headers ) {
             headers_.connection = value;
         } else if (key == "transfer-encoding") {
             std::set<std::string> st;
-            std::vector<std::string> splitedValue = splitString(value, ", ");
+            std::vector<std::string> splitedValue = trimStringIter(splitString(value, ","));
             for (size_t i = 0; i < splitedValue.size(); ++i) {
                 st.insert(toLowerString(splitedValue[i]));
             }
@@ -97,6 +101,53 @@ int HttpRequest::parseHeader( const std::vector<std::string>& headers ) {
     }
 
     return (0);
+}
+
+int HttpRequest::validateHeaderLine( const std::string& header_line ) const {
+    std::string::size_type delim_pos = header_line.find(":");
+    if (delim_pos == std::string::npos) {
+        return (1);
+    }
+
+    std::string key = toLowerString(header_line.substr(0, delim_pos));
+    if (validateHeaderFieldName(key)) {
+        return (1);
+    }
+
+    std::string value = toLowerString(trimString(header_line.substr(delim_pos + 1)));
+    if (validateHeaderFieldContent(value)) {
+        return (1);
+    }
+
+    return (0);
+}
+
+int HttpRequest::validateHeaderFieldName( const std::string& name ) const {
+    const std::string charset = "!#$%&'*+-.^_`|~";
+
+    if (hasSpace(name)) {
+        return (1);
+    }
+
+    for (std::string::size_type i = 0; i < name.size(); ++i) {
+        if (!isalnum(name[i]) && (charset.find(name[i]) == std::string::npos)) {
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+int HttpRequest::validateHeaderFieldContent( const std::string& content ) const {
+    const std::string charset = "\x09";
+
+    for (std::string::size_type i = 0; i < content.size(); ++i) {
+        if (!isprint(content[i]) && (charset.find(content[i]) == std::string::npos)) {
+            return 1;
+        }
+    }
+
+    return 0;
 }
 
 void HttpRequest::printRequest( void ) const {

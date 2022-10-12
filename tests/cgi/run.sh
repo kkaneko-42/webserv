@@ -4,7 +4,7 @@
 make -C ../../ && cp ../../webserv ./;
 
 # execute test
-./webserv ./methods_test.conf > /dev/null 2>&1 & \
+./webserv ./cgi_test.conf > /dev/null 2>&1 & \
 for src in `ls -1 ./src/ | grep .py`
 do
     python3 ./src/$src

@@ -1,6 +1,6 @@
 #include "utils.hpp"
 
-std::string trimString(const std::string& str) {
+std::string trimString( const std::string& str ) {
     if (str.size() == 0) {
         return str;
     }
