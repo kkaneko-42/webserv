@@ -20,5 +20,5 @@ HttpResponse DELETE::execute( const HttpRequest& req ) {
         );
     }
 
-    return (HttpResponse());
+    return (HttpResponse(HttpResponse::NO_CONTENT));
 }

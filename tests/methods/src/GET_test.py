@@ -15,6 +15,15 @@ class GetTest(unittest.TestCase):
             expected = f.read()
             self.assertEqual(expected, r.text)
 
+    # index.html != "", autoindex == trueなるディレクトリをgetする
+    def test_dir_index_and_autoindex(self):
+        r = requests.get(URL + "/get/")
+
+        self.assertEqual(200, r.status_code)
+        with open(ENV_DIR + "/index.html") as f:
+            expected = f.read()
+            self.assertEqual(expected, r.text)
+
     # index.htmlが設定されたdirをGETする
     def test_dir_index(self):
         r = requests.get(URL + "/get/dir/")

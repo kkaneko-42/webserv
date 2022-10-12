@@ -14,6 +14,7 @@ class HttpResponse {
         enum Status {
             OK = 200,
             CREATED,
+            NO_CONTENT = 204,
 
             SEE_OTHER = 303,
 
@@ -26,7 +27,7 @@ class HttpResponse {
             INTERNAL_SERVER_ERROR = 500,
         };
 
-        HttpResponse( void );
+        HttpResponse( Status status = OK );
 
         void setVersion( const std::string& version ) { version_ = version; }
         void setStatus( Status status ) { status_ = status; }

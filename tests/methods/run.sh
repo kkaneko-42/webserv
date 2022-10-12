@@ -4,7 +4,7 @@ python3 -m pip install --upgrade pip;
 python3 -m pip install requests;
 
 # build
-make -C ../../../ && cp ../../../webserv ./;
+make -C ../../ && cp ../../webserv ./;
 
 # execute test
 ./webserv ./methods_test.conf > /dev/null 2>&1 & \

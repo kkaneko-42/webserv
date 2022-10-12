@@ -3,8 +3,8 @@
 #include "../utils/utils.hpp"
 #include "../conf/Config.hpp"
 
-HttpResponse::HttpResponse( void )
-: version_("1.1"), status_(OK),
+HttpResponse::HttpResponse( Status status )
+: version_("1.1"), status_(status),
 headers_(std::vector< std::pair< std::string, std::string> >()),
 body_("") {}
 
@@ -38,6 +38,9 @@ std::string HttpResponse::statusMsg( Status status ) {
             break;
         case CREATED:
             msg = "Created";
+            break;
+        case NO_CONTENT:
+            msg = "No Content";
             break;
         case SEE_OTHER:
             msg = "See Other";
