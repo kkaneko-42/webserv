@@ -17,10 +17,10 @@ class ConfigParser {
     void Run(ConfigLexer &lexer);
     void Debug();
 
-    bool conf(ConfigLexer &lexer);
-    bool server(ConfigLexer &lexer);
-    bool server_conf(ConfigLexer &lexer);
-    bool location_conf(ConfigLexer &lexer, LocationInfo &path);
+    void conf(ConfigLexer &lexer);
+    void server(ConfigLexer &lexer);
+    void server_conf(ConfigLexer &lexer);
+    void location_conf(ConfigLexer &lexer, LocationInfo &path);
 };
 
 /*

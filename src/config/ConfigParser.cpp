@@ -17,33 +17,26 @@ void ConfigParser::Debug() {
     debugConfigInfo(info_, 0);
 }
 
-bool ConfigParser::conf(ConfigLexer &lexer) {
+void ConfigParser::conf(ConfigLexer &lexer) {
     while (!lexer.Equal(TK_EOF)) {
-        bool ret = this->server(lexer);
-        if (!ret) {
-            exit(1);
-        }
+        this->server(lexer);
     }
-    return true;
+    return;
 }
 
-bool ConfigParser::server(ConfigLexer &lexer) {
+void ConfigParser::server(ConfigLexer &lexer) {
     lexer.Skip("server");
     lexer.Skip("{");
 
     info_.servers_info.push_back(ServerInfo());
     while (!lexer.Equal("}")) {
-        bool ret = this->server_conf(lexer);
-        if (!ret) {
-            exit(1);
-        }
+        this->server_conf(lexer);
     }
 
     lexer.Skip("}");
-    return true;
 }
 
-bool ConfigParser::server_conf(ConfigLexer &lexer) {
+void ConfigParser::server_conf(ConfigLexer &lexer) {
     ServerInfo &server_info = *info_.servers_info.rbegin();
 
     if (lexer.Equal("listen")) {
@@ -61,7 +54,7 @@ bool ConfigParser::server_conf(ConfigLexer &lexer) {
         server_info.listen.port = stringToInt(splited[1]);
 
         lexer.Skip(";");
-        return true;
+        return;
     }
 
     if (lexer.Equal("server_name")) {
@@ -71,7 +64,7 @@ bool ConfigParser::server_conf(ConfigLexer &lexer) {
         lexer.Skip(TK_WORD);
 
         lexer.Skip(";");
-        return true;
+        return;
     }
 
     if (lexer.Equal("client_max_body_size")) {
@@ -82,7 +75,7 @@ bool ConfigParser::server_conf(ConfigLexer &lexer) {
         lexer.Skip(TK_WORD);
 
         lexer.Skip(";");
-        return true;
+        return;
     }
 
     if (lexer.Equal("error_page")) {
@@ -108,7 +101,7 @@ bool ConfigParser::server_conf(ConfigLexer &lexer) {
         }
 
         lexer.Skip(";");
-        return true;
+        return;
     }
 
     if (lexer.Equal("location")) {
@@ -119,22 +112,19 @@ bool ConfigParser::server_conf(ConfigLexer &lexer) {
 
         while (!lexer.Equal("}")) {
             // TODO: pathの重複は許す？
-            bool ret = location_conf(lexer, server_info.locations_info_map[path]);
-            if (!ret) {
-                exit(1);
-            }
+            location_conf(lexer, server_info.locations_info_map[path]);
             server_info.locations_info_map[path].location_path = path;
             // TODO: validation
         }
 
         lexer.Skip("}");
-        return true;
+        return;
     }
 
-    return false;
+    exit(1);
 }
 
-bool ConfigParser::location_conf(ConfigLexer &lexer,
+void ConfigParser::location_conf(ConfigLexer &lexer,
                                  LocationInfo &location_info) {
     if (lexer.Equal("alias")) {
         lexer.Skip("alias");
@@ -143,7 +133,7 @@ bool ConfigParser::location_conf(ConfigLexer &lexer,
         lexer.Skip(TK_WORD);
 
         lexer.Skip(";");
-        return true;
+        return;
     }
 
     if (lexer.Equal("allow_methods")) {
@@ -166,7 +156,7 @@ bool ConfigParser::location_conf(ConfigLexer &lexer,
         }
 
         lexer.Skip(";");
-        return true;
+        return;
     }
 
     if (lexer.Equal("return")) {
@@ -176,7 +166,7 @@ bool ConfigParser::location_conf(ConfigLexer &lexer,
         lexer.Skip(TK_WORD);
 
         lexer.Skip(";");
-        return true;
+        return;
     }
 
     if (lexer.Equal("autoindex")) {
@@ -195,7 +185,7 @@ bool ConfigParser::location_conf(ConfigLexer &lexer,
         }
 
         lexer.Skip(";");
-        return true;
+        return;
     }
 
     if (lexer.Equal("index")) {
@@ -205,7 +195,7 @@ bool ConfigParser::location_conf(ConfigLexer &lexer,
         lexer.Skip(TK_WORD);
 
         lexer.Skip(";");
-        return true;
+        return;
     }
 
     if (lexer.Equal("allow_file_upload")) {
@@ -224,7 +214,7 @@ bool ConfigParser::location_conf(ConfigLexer &lexer,
         }
 
         lexer.Skip(";");
-        return true;
+        return;
     }
 
     if (lexer.Equal("save_folder")) {
@@ -234,7 +224,7 @@ bool ConfigParser::location_conf(ConfigLexer &lexer,
         lexer.Skip(TK_WORD);
 
         lexer.Skip(";");
-        return true;
+        return;
     }
 
     if (lexer.Equal("allow_cgi_extensions")) {
@@ -251,8 +241,8 @@ bool ConfigParser::location_conf(ConfigLexer &lexer,
         }
 
         lexer.Skip(";");
-        return true;
+        return;
     }
 
-    return false;
+    exit(1);
 }
