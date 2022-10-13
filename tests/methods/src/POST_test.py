@@ -14,7 +14,8 @@ class PostTest(unittest.TestCase):
         # 作成したファイルの削除
         if os.path.isfile(UPLOAD_DIR + "/chmod000.txt"):
             os.chmod(UPLOAD_DIR + "/chmod000.txt", 0o755)
-        shutil.rmtree(UPLOAD_DIR)
+        if os.path.exists(UPLOAD_DIR):
+            shutil.rmtree(UPLOAD_DIR)
         os.mkdir(UPLOAD_DIR)
         os.mkdir(UPLOAD_DIR + "/dir")
         os.mkdir(UPLOAD_DIR + "/hoge")
@@ -35,7 +36,7 @@ class PostTest(unittest.TestCase):
         with open(UPLOAD_DIR + "/create.txt") as f:
             actual = f.read()
             self.assertEqual(expected, actual)
-    
+
     # upload_fileの中のディレクトリにpost
     def test_post_file_in_dir(self):
         expected = "aaaaa"

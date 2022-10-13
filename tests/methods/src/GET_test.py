@@ -41,12 +41,17 @@ class GetTest(unittest.TestCase):
 
     # autoindexもindex.htmlも設定されていないdirをGETする
     def test_error_dir(self):
-        r = requests.get(URL + "/get/dir/error/")
+        r = requests.get(URL + "/get/dir/no_index/")
 
-        self.assertEqual(404, r.status_code)
-        with open(ENV_DIR + "/40x.html") as f:
+        self.assertEqual(200, r.status_code)
+        with open(ENV_DIR + "/dir/index.html") as f:
             expected = f.read()
             self.assertEqual(expected, r.text)
+
+    # 存在しないファイルをGET
+    def test_non_existent_file(self):
+        r = requests.get(URL + "/get/hogwbuoeugbowuef.txt")
+        self.assertEqual(404, r.status_code)
 
     # GETが認められていないlocationをGET
     def test_not_allowed(self):
