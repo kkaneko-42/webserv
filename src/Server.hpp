@@ -17,7 +17,7 @@
 #include <vector>
 #include <set>
 #include <fstream>
-#include "./conf/Config.hpp"
+#include "./config/Config.hpp"
 #include "./events/NewConnectionEvent.hpp"
 #include "./events/RecieveRequestEvent.hpp"
 #include "./events/SendResponseEvent.hpp"

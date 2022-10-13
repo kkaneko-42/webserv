@@ -1,7 +1,7 @@
 #include "HttpResponse.hpp"
 #include "HttpRequest.hpp"
 #include "../utils/utils.hpp"
-#include "../conf/Config.hpp"
+#include "../config/Config.hpp"
 
 HttpResponse::HttpResponse( Status status )
 : version_("1.1"), status_(status),

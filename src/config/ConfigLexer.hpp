@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <cstdlib>
 
 enum TokenKind {
     TK_WORD,
