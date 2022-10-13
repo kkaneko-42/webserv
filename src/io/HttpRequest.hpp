@@ -5,7 +5,7 @@
 #include <vector>
 #include <exception>
 #include <iostream>
-#include "../conf/Config.hpp"
+#include "../config/Config.hpp"
 
 class HttpMethod;
 
