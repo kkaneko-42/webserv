@@ -3,7 +3,7 @@
 
 #include "../io/HttpResponse.hpp"
 #include "../io/HttpRequest.hpp"
-#include "../conf/Config.hpp"
+#include "../config/Config.hpp"
 
 class HttpMethod {
     public:
