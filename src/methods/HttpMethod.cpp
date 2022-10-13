@@ -19,13 +19,5 @@ HttpMethod* generateHttpMethod( const std::string& name ) {
 }
 
 bool isMethodAllowed( const std::string& name, const LocationInfo& location ) {
-    std::vector<std::string> allowed_methods = location.allow_methods;
-
-    for (size_t i = 0; i < location.allow_methods.size(); ++i) {
-        if (name == allowed_methods[i]) {
-            return (true);
-        }
-    }
-
-    return (false);
+    return location.allow_methods.count(name) > 0;
 }

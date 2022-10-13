@@ -12,21 +12,16 @@ Server::~Server( void ) {
 }
 
 int Server::Init( const std::string& conf_file ) {
-    if (conf_.parse(conf_file)) {
-        return 1;
-    }
-    std::cout << "==== conf ====" << std::endl;
-    conf_.debugConfig();
-
+    conf_.Parse(conf_file);
     return 0;
 }
 
 int Server::Run( void ) {
-    std::vector<ServerInfo> servers_info = this->conf_.getServersInfo();
+    std::vector<ServerInfo> servers_info = this->conf_.GetConf().servers_info;
 
     for (size_t i = 0; i < servers_info.size(); ++i) {
         std::pair<std::string, int> listen_addr = \
-            std::pair<std::string, int>(servers_info[i].listen.addr, servers_info[i].listen.port);
+            std::pair<std::string, int>(servers_info[i].listen.ip, servers_info[i].listen.port);
 
         if (this->isListenedAddress(listen_addr)) {
             continue;
@@ -74,7 +69,7 @@ void Server::bindSocket( int sock, const ServerInfo& info ) const {
 
     addr.sin_family = AF_INET;
     addr.sin_port = htons(info.listen.port);
-    addr.sin_addr.s_addr = inet_addr(info.listen.addr.c_str());
+    addr.sin_addr.s_addr = inet_addr(info.listen.ip.c_str());
 
     if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (char*)&on, sizeof(on)) < 0) {
         SYSCALL_ERROR("setsockopt");

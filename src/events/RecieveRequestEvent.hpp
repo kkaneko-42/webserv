@@ -6,6 +6,8 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 
+#define MAX_RAW_REQUEST_SIZE 4096
+
 class Server;
 
 class RecieveRequestEvent : public Event {
