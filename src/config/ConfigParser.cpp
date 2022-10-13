@@ -18,6 +18,11 @@ void ConfigParser::Debug() {
 }
 
 void ConfigParser::conf(ConfigLexer &lexer) {
+    if (lexer.Equal(TK_EOF)) {
+        std::cerr << "server does not exist" << std::endl;
+        exit(1);
+    }
+
     while (!lexer.Equal(TK_EOF)) {
         this->server(lexer);
     }
