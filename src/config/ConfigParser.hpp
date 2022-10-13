@@ -4,7 +4,7 @@
 #include "Config.hpp"
 #include "ConfigLexer.hpp"
 
-class Config;
+#define MAX_PORT 65535
 
 class ConfigParser {
   private:
@@ -21,6 +21,11 @@ class ConfigParser {
     void server(ConfigLexer &lexer);
     void server_conf(ConfigLexer &lexer);
     void location_conf(ConfigLexer &lexer, LocationInfo &path);
+
+    bool isPort(const std::string &str);
+    bool isIpv4(const std::string &str);
+
+    bool hasZeroPadding(const std::string &str);
 };
 
 /*

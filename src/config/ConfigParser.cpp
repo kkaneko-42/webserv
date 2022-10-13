@@ -45,11 +45,13 @@ void ConfigParser::server_conf(ConfigLexer &lexer) {
             splitString(lexer.GetToken().str, ":");
         lexer.Skip(TK_WORD);
 
-        // TODO: validate 0.0.0.0:4242
-        if (splited.size() != 2) {
-            std::cerr << "listen" << std::endl;
+        // validation: 0.0.0.0:4242
+        if (splited.size() != 2 || !this->isIpv4(splited[0]) ||
+            !this->isPort(splited[1])) {
+            std::cerr << "listen: error" << std::endl;
             exit(1);
         }
+
         server_info.listen.ip = splited[0];
         server_info.listen.port = stringToInt(splited[1]);
 
@@ -245,4 +247,47 @@ void ConfigParser::location_conf(ConfigLexer &lexer,
     }
 
     exit(1);
+}
+
+bool ConfigParser::isIpv4(const std::string &str) {
+    std::vector<std::string> splited = splitString(str, ".");
+    if (splited.size() != 4)
+        return false;
+
+    for (size_t i = 0; i < splited.size(); i++) {
+        if (hasZeroPadding(splited[i]))
+            return false;
+
+        int num = 0;
+        for (size_t j = 0; j < splited[i].size(); j++) {
+            if (!isnumber(splited[i][j]))
+                return false;
+            num = num * 10 + splited[i][j] - '0';
+            if (num > 255)
+                return false;
+        }
+    }
+
+    return true;
+}
+
+bool ConfigParser::isPort(const std::string &str) {
+    if (str.size() == 0 || hasZeroPadding(str))
+        return false;
+
+    int port = 0;
+
+    for (size_t i = 0; i < str.size(); i++) {
+        if (!isnumber(str[i]))
+            return false;
+        port = port * 10 + str[i] - '0';
+        if (port > MAX_PORT)
+            return false;
+    }
+
+    return true;
+}
+
+bool ConfigParser::hasZeroPadding(const std::string &str) {
+    return str.size() > 1 && str[0] == '0';
 }
