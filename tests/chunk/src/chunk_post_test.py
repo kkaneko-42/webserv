@@ -51,6 +51,18 @@ class ChunkPostTest(unittest.TestCase):
             actual = f.read()
             self.assertEqual(''.join(expected), actual)
 
+    def test_has_empty_chunk(self):
+        cases = [
+            ["", "hogehoge", "fuga"],
+            ["hogehoge", "", "fuga"],
+            ["hogehoge", "fuga", ""]
+        ]
+
+        for case in cases:
+            data = create_chunked_body(case)
+            r = requests.post(URL + "/post/chunk_has_empty_chunk.txt", headers=HEADERS, data=data)
+            self.assertEqual(400, r.status_code)
+
     def test_no_eof(self):
         s = "hello, world"
         data = f"{hex(len(s))[2:]}\r\n{s}\r\n"

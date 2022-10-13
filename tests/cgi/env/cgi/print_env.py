@@ -1,10 +1,10 @@
-#!/usr/local/bin/python3
+#!/usr/bin/python3
 import os
 
 body = f"PATH_INFO: {os.environ['PATH_INFO']}\n"
 body += f"QUERY_STRING: {os.environ['QUERY_STRING']}\n"
 
-# header
+# headers
 print("Status: 200", end="\r\n")
 print("Content-type: text/plain", end="\r\n")
 print("Connection: close", end="\r\n")
