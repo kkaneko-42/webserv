@@ -25,6 +25,7 @@ class ConfigParser {
     bool isPort(const std::string &str);
     bool isIpv4(const std::string &str);
     bool isLocationPath(const std::string &str);
+    bool isClientMaxBodySize(const std::string &str);
 
     bool isDirName(const std::string &str);
     bool hasZeroPadding(const std::string &str);

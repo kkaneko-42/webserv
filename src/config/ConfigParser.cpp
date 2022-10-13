@@ -78,10 +78,14 @@ void ConfigParser::server_conf(ConfigLexer &lexer) {
 
     if (lexer.Equal("client_max_body_size")) {
         lexer.Skip("client_max_body_size");
-
-        // TODO: validate NUM
-        server_info.client_max_body_size = stringToInt(lexer.GetToken().str);
+        std::string body_size = lexer.GetToken().str;
         lexer.Skip(TK_WORD);
+
+        if (!this->isClientMaxBodySize(body_size)) {
+            std::cerr << "client_max_body_size error" << std::endl;
+            exit(1);
+        }
+        server_info.client_max_body_size = stringToInt(body_size);
 
         lexer.Skip(";");
         return;
@@ -115,13 +119,13 @@ void ConfigParser::server_conf(ConfigLexer &lexer) {
 
     if (lexer.Equal("location")) {
         lexer.Skip("location");
-        
+
         std::string path = lexer.GetToken().str;
         if (!this->isLocationPath(path)) {
             std::cerr << "location error" << std::endl;
             exit(1);
         }
-        
+
         lexer.Skip(TK_WORD);
         lexer.Skip("{");
 
@@ -326,6 +330,11 @@ bool ConfigParser::isPort(const std::string &str) {
 
 bool ConfigParser::isLocationPath(const std::string &str) {
     return str.size() != 0 && str[0] == '/' && str[str.size() - 1] == '/';
+}
+
+bool ConfigParser::isClientMaxBodySize(const std::string &str) {
+    // TODO: validate NUM
+    return true;
 }
 
 bool ConfigParser::isDirName(const std::string &str) {
