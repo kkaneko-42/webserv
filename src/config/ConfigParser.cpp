@@ -13,7 +13,7 @@ void ConfigParser::Run(ConfigLexer &lexer) {
 }
 
 void ConfigParser::Debug() {
-    std::cerr << "========= parser ==========" << std::endl;
+    std::cout << "========= parser ==========" << std::endl;
     debugConfigInfo(info_, 0);
 }
 
@@ -55,6 +55,7 @@ bool ConfigParser::server_conf(ConfigLexer &lexer) {
         // TODO: validate 0.0.0.0:4242
         if (splited.size() != 2) {
             std::cerr << "listen" << std::endl;
+            exit(1);
         }
         server_info.listen.ip = splited[0];
         server_info.listen.port = stringToInt(splited[1]);
