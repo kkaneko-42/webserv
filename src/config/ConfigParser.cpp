@@ -155,6 +155,11 @@ void ConfigParser::location_conf(ConfigLexer &lexer,
             lexer.Skip(TK_WORD);
         }
 
+        if (methods.size() == 0) {
+            std::cerr << "allow_methods error" << std::endl;
+            exit(1);
+        }
+
         for (size_t i = 0; i < methods.size(); i++) {
             // TODO: refactor
             if (methods[i] != "GET" && methods[i] != "POST" &&
