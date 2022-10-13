@@ -24,6 +24,7 @@ class ConfigParser {
 
     bool isPort(const std::string &str);
     bool isIpv4(const std::string &str);
+    bool isAlias(const std::string &str);
 
     bool hasZeroPadding(const std::string &str);
 };

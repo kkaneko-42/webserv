@@ -62,6 +62,8 @@ void ConfigParser::server_conf(ConfigLexer &lexer) {
     if (lexer.Equal("server_name")) {
         lexer.Skip("server_name");
 
+        // TODO: validation
+        // https://blog.ohgaki.net/how-to-validate-ipv4-host-names
         server_info.server_name = lexer.GetToken().str;
         lexer.Skip(TK_WORD);
 
@@ -132,6 +134,12 @@ void ConfigParser::location_conf(ConfigLexer &lexer,
         lexer.Skip("alias");
 
         location_info.alias = lexer.GetToken().str;
+        // valdation
+        if (!this->isAlias(location_info.alias)) {
+            std::cerr << "alias error" << std::endl;
+            exit(1);
+        }
+
         lexer.Skip(TK_WORD);
 
         lexer.Skip(";");
@@ -280,12 +288,18 @@ bool ConfigParser::isPort(const std::string &str) {
     for (size_t i = 0; i < str.size(); i++) {
         if (!isnumber(str[i]))
             return false;
+
         port = port * 10 + str[i] - '0';
+
         if (port > MAX_PORT)
             return false;
     }
 
     return true;
+}
+
+bool ConfigParser::isAlias(const std::string &str) {
+    return str.size() != 0 && str[str.size() - 1] == '/';
 }
 
 bool ConfigParser::hasZeroPadding(const std::string &str) {
