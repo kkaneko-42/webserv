@@ -110,12 +110,17 @@ void ConfigParser::server_conf(ConfigLexer &lexer) {
 
     if (lexer.Equal("location")) {
         lexer.Skip("location");
+        
         std::string path = lexer.GetToken().str;
+        if (!this->isLocationPath(path)) {
+            std::cerr << "location error" << std::endl;
+            exit(1);
+        }
+        
         lexer.Skip(TK_WORD);
         lexer.Skip("{");
 
         while (!lexer.Equal("}")) {
-            // TODO: pathの重複は許す？
             location_conf(lexer, server_info.locations_info_map[path]);
             server_info.locations_info_map[path].location_path = path;
             // TODO: validation
@@ -135,7 +140,7 @@ void ConfigParser::location_conf(ConfigLexer &lexer,
 
         location_info.alias = lexer.GetToken().str;
         // valdation
-        if (!this->isAlias(location_info.alias)) {
+        if (!this->isDirName(location_info.alias)) {
             std::cerr << "alias error" << std::endl;
             exit(1);
         }
@@ -161,7 +166,6 @@ void ConfigParser::location_conf(ConfigLexer &lexer,
         }
 
         for (size_t i = 0; i < methods.size(); i++) {
-            // TODO: refactor
             if (methods[i] != "GET" && methods[i] != "POST" &&
                 methods[i] != "DELETE") {
                 std::cerr << "allow_methods error" << std::endl;
@@ -238,10 +242,17 @@ void ConfigParser::location_conf(ConfigLexer &lexer,
         location_info.save_folder = lexer.GetToken().str;
         lexer.Skip(TK_WORD);
 
+        // validation
+        if (!this->isDirName(location_info.save_folder)) {
+            std::cerr << "save_folder error" << std::endl;
+            exit(1);
+        }
+
         lexer.Skip(";");
         return;
     }
 
+    // TODO: 仕様どうする？
     if (lexer.Equal("allow_cgi_extensions")) {
         lexer.Skip("allow_cgi_extensions");
 
@@ -249,6 +260,11 @@ void ConfigParser::location_conf(ConfigLexer &lexer,
         while (!lexer.Equal(";")) {
             extentions.push_back(lexer.GetToken().str);
             lexer.Skip(TK_WORD);
+        }
+
+        if (extentions.size() < 1) {
+            std::cerr << "allow_cgi_extensions error" << std::endl;
+            exit(1);
         }
 
         for (size_t i = 0; i < extentions.size(); i++) {
@@ -303,7 +319,11 @@ bool ConfigParser::isPort(const std::string &str) {
     return true;
 }
 
-bool ConfigParser::isAlias(const std::string &str) {
+bool ConfigParser::isLocationPath(const std::string &str) {
+    return str.size() != 0 && str[0] == '/' && str[str.size() - 1] == '/';
+}
+
+bool ConfigParser::isDirName(const std::string &str) {
     return str.size() != 0 && str[str.size() - 1] == '/';
 }
 
