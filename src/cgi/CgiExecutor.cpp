@@ -26,6 +26,7 @@ void CgiExecutor::init( const HttpRequest& req ) {
 
     std::string::size_type min_pos = std::numeric_limits<std::string::size_type>::max();
     std::string extention;
+
     for (size_t i = 0; i < location.allow_cgi_extensions.size(); ++i) {
         std::string allow = location.allow_cgi_extensions[i];
         std::string::size_type pos = req_target.find(allow);

@@ -53,6 +53,7 @@ class Server {
         bool isListenedAddress( const std::pair<std::string, int>& addr );
 
         Config getConf( void ) const { return conf_; }
+        const std::vector<ServerInfo>&  getServersInfo( void ) const { return conf_.GetConf().servers_info; }
 
         const std::pair<std::string, int>& getListenSdToAddr( int sd );
         const std::pair<std::string, int>& getClientSdToAddr( int sd );

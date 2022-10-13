@@ -198,11 +198,11 @@ int HttpRequest::hostMatching(
     // Host: xxxxxxxxxxxx
     const std::string hostname = this->getHostName();
 
-    std::string addr = listen_addr.first;
+    std::string ip = listen_addr.first;
     int port = listen_addr.second;
 
     std::cout << "host: " << hostname << std::endl;
-    std::cout << "listen.addr: " << addr << std::endl;
+    std::cout << "listen.ip: " << ip << std::endl;
     std::cout << "listen.port: " << port << std::endl;
 
     // server_name matching
@@ -211,10 +211,10 @@ int HttpRequest::hostMatching(
         ServerInfo info = servers_info[i];
 
         std::cout << "i=" << i << std::endl;
-        std::cout << "info.addr: " << info.listen.addr << std::endl;
+        std::cout << "info.ip: " << info.listen.ip << std::endl;
         std::cout << "info.port: " << info.listen.port << std::endl;
 
-        if (addr != info.listen.addr || port != info.listen.port) {
+        if (ip != info.listen.ip || port != info.listen.port) {
             continue;
         }
         if (info.server_name == hostname) {
@@ -229,10 +229,10 @@ int HttpRequest::hostMatching(
         ServerInfo info = servers_info[i];
 
         std::cout << "i=" << i << std::endl;
-        std::cout << "info.addr: " << info.listen.addr << std::endl;
+        std::cout << "info.ip: " << info.listen.ip << std::endl;
         std::cout << "info.port: " << info.listen.port << std::endl;
 
-        if (addr == info.listen.addr && port == info.listen.port) {
+        if (ip == info.listen.ip && port == info.listen.port) {
             host_info_ = info;
             return 0;
         }
