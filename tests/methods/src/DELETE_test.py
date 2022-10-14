@@ -50,4 +50,5 @@ class DeleteTest(unittest.TestCase):
         self.assertEqual(True, os.path.exists(ENV_DIR + "/tmp_delete.txt"))
 
 if __name__ == "__main__":
+    print("@@@ DELETE test @@@")
     unittest.main()

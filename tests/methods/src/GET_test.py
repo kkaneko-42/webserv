@@ -63,4 +63,5 @@ class GetTest(unittest.TestCase):
             self.assertEqual(expected, r.text)
 
 if __name__ == "__main__":
+    print("@@@ GET test @@@")
     unittest.main()

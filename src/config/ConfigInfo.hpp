@@ -33,7 +33,12 @@ struct LocationInfo {
     std::string save_folder;
     std::vector<std::string> allow_cgi_extensions;
 
-    LocationInfo() { index = DEFAULT_INDEX; }
+    LocationInfo() {
+        autoindex = false;
+        allow_file_upload = false;
+
+        index = DEFAULT_INDEX;
+    }
 };
 
 struct ServerInfo {

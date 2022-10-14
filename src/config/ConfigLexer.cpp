@@ -41,7 +41,7 @@ void ConfigLexer::Run(std::string &str) {
 }
 
 void ConfigLexer::Debug() {
-    std::cerr << "======= lexer ========" << std::endl;
+    std::cout << "======= lexer ========" << std::endl;
 
     std::map<TokenKind, std::string> kind_map;
     kind_map[TK_WORD] = "TK_WORD";

@@ -37,13 +37,19 @@ class CgiTest(unittest.TestCase):
                 "query_string": ""
             },
         ]
-        
+
         for t in tests:
             for func in METHODS:
                 path_info = t["path_info"]
                 query_string = t["query_string"]
+                # python cgi test
                 r = func(URL + f"/cgi/print_env.py{path_info}?{query_string}")
+                self.assertEqual(200, r.status_code)
+                expected = f"PATH_INFO: {path_info}\nQUERY_STRING: {query_string}\n"
+                self.assertEqual(expected, r.text)
 
+                # sh cgi test
+                r = func(URL + f"/cgi/print_env.sh{path_info}?{query_string}")
                 self.assertEqual(200, r.status_code)
                 expected = f"PATH_INFO: {path_info}\nQUERY_STRING: {query_string}\n"
                 self.assertEqual(expected, r.text)
@@ -69,11 +75,10 @@ class CgiTest(unittest.TestCase):
             self.assertEqual(200, r.status_code)
             self.assertEqual(''.join(arr), r.text)
 
-    def test_empty_body(self):
+    def test_cgi_script_fail(self):
         for func in METHODS:
-            r = func(URL + "/cgi/print_stdin.py", data="")
+            r = func(URL + "/cgi/fail.py")
             self.assertEqual(400, r.status_code)
-        
 
 if __name__ == "__main__":
     unittest.main()

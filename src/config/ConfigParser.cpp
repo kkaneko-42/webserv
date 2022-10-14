@@ -13,7 +13,7 @@ void ConfigParser::Run(ConfigLexer &lexer) {
 }
 
 void ConfigParser::Debug() {
-    std::cerr << "========= parser ==========" << std::endl;
+    std::cout << "========= parser ==========" << std::endl;
     debugConfigInfo(info_, 0);
 }
 

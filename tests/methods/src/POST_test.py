@@ -107,4 +107,5 @@ class PostTest(unittest.TestCase):
         self.assertEqual(405, r.status_code)
 
 if __name__ == "__main__":
+    print("@@@ POST test @@@")
     unittest.main()
