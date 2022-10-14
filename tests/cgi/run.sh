@@ -12,10 +12,11 @@ cp ../../webserv ./;
 # execute
 if [ "${OS}" = "Linux" ]; then
     valgrind --log-file="valgrind.log" --leak-check=yes ./webserv > /dev/null 2>&1 &
-    sleep 1
+    echo "waiting for starting test..."
+    sleep 2
 else
     ./webserv > /dev/null 2>&1 &
-    sleep 0.5
+    sleep 2
 fi
 
 # run test
@@ -31,7 +32,7 @@ if [ "${OS}" = "Linux" ]; then
     
     # wait valgrind exit
     while [ `ps | grep 'memcheck' | awk '{print $1}'` ]; do
-        echo "wait for valgrind exit...";
+        echo "waiting for valgrind exit...";
         sleep 0.1;
     done
 

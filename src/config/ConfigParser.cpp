@@ -1,6 +1,7 @@
 #include "ConfigParser.hpp"
 #include "../utils/utils.hpp"
 #include <iostream>
+#include <cctype>
 
 ConfigParser::ConfigParser(ConfigInfo &info) : info_(info) {
 }
@@ -298,7 +299,7 @@ bool ConfigParser::isIpv4(const std::string &str) {
 
         int num = 0;
         for (size_t j = 0; j < splited[i].size(); j++) {
-            if (!isnumber(splited[i][j]))
+            if (!isdigit(splited[i][j]))
                 return false;
             num = num * 10 + splited[i][j] - '0';
             if (num > 255)
@@ -316,7 +317,7 @@ bool ConfigParser::isPort(const std::string &str) {
     int port = 0;
 
     for (size_t i = 0; i < str.size(); i++) {
-        if (!isnumber(str[i]))
+        if (!isdigit(str[i]))
             return false;
 
         port = port * 10 + str[i] - '0';

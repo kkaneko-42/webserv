@@ -6,7 +6,8 @@ import os
 TEST_CASES_DIR="./cases/"
 
 def req(raw_req):
-    sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.settimeout(5)
     sock.connect(("127.0.0.1", 4242))
     sock.send(raw_req.encode())
     rcv_data = sock.recv(1024)
@@ -35,12 +36,15 @@ class ReqValidationTest(unittest.TestCase):
         cases = load_test_cases()
 
         for case in cases:
-            with open(case["path"]) as f:
+            path = case["path"]
+            status = case["status"]
+            with open(path) as f:
+                print(f"Testing {path}...")
                 raw_req = f.read()
                 resp = req(raw_req)
-                self.assertEqual(case["status"], get_status(resp))
+                self.assertEqual(status, get_status(str(resp)))
 
 if __name__ == "__main__":
-    unittest.main()
     # print(load_test_cases())
     # print(get_status("HTTP/1.1 200 OK\r\naaaaa"))
+    unittest.main()
