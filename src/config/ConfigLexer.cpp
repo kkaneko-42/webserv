@@ -1,7 +1,7 @@
 #include "ConfigLexer.hpp"
+#include <iomanip>
 #include <iostream>
 #include <map>
-#include <iomanip>
 
 ConfigLexer::ConfigLexer() : index_(0) {
 }
@@ -73,10 +73,19 @@ bool ConfigLexer::Equal(std::string str) {
 }
 
 void ConfigLexer::Skip(TokenKind kind, std::string str) {
+    std::map<TokenKind, std::string> mp;
+    mp[TK_WORD] = "WORD";
+    mp[TK_OP] = "OP";
+    mp[TK_EOF] = "EOF";
+
     if (tok_[index_].kind != kind) {
+        std::cerr << "token: '" << tok_[index_].str << "' is not " << mp[kind]
+                  << std::endl;
         exit(1);
     }
     if (str != "" && tok_[index_].str != str) {
+        std::cerr << "token: '" << tok_[index_].str << "', but expected '"
+                  << str << "'" << std::endl;
         exit(1);
     }
     index_++;
@@ -84,6 +93,8 @@ void ConfigLexer::Skip(TokenKind kind, std::string str) {
 
 void ConfigLexer::Skip(std::string str) {
     if (str != "" && tok_[index_].str != str) {
+        std::cerr << "token: '" << tok_[index_].str << "', but expected '"
+                  << str << "'" << std::endl;
         exit(1);
     }
     index_++;
