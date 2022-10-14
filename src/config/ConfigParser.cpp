@@ -13,37 +13,35 @@ void ConfigParser::Run(ConfigLexer &lexer) {
 }
 
 void ConfigParser::Debug() {
-    std::cerr << "========= parser ==========" << std::endl;
+    std::cout << "========= parser ==========" << std::endl;
     debugConfigInfo(info_, 0);
 }
 
-bool ConfigParser::conf(ConfigLexer &lexer) {
-    while (!lexer.Equal(TK_EOF)) {
-        bool ret = this->server(lexer);
-        if (!ret) {
-            exit(1);
-        }
+void ConfigParser::conf(ConfigLexer &lexer) {
+    if (lexer.Equal(TK_EOF)) {
+        std::cerr << "server does not exist" << std::endl;
+        exit(1);
     }
-    return true;
+
+    while (!lexer.Equal(TK_EOF)) {
+        this->server(lexer);
+    }
+    return;
 }
 
-bool ConfigParser::server(ConfigLexer &lexer) {
+void ConfigParser::server(ConfigLexer &lexer) {
     lexer.Skip("server");
     lexer.Skip("{");
 
     info_.servers_info.push_back(ServerInfo());
     while (!lexer.Equal("}")) {
-        bool ret = this->server_conf(lexer);
-        if (!ret) {
-            exit(1);
-        }
+        this->server_conf(lexer);
     }
 
     lexer.Skip("}");
-    return true;
 }
 
-bool ConfigParser::server_conf(ConfigLexer &lexer) {
+void ConfigParser::server_conf(ConfigLexer &lexer) {
     ServerInfo &server_info = *info_.servers_info.rbegin();
 
     if (lexer.Equal("listen")) {
@@ -52,36 +50,45 @@ bool ConfigParser::server_conf(ConfigLexer &lexer) {
             splitString(lexer.GetToken().str, ":");
         lexer.Skip(TK_WORD);
 
-        // TODO: validate 0.0.0.0:4242
-        if (splited.size() != 2) {
-            std::cerr << "listen" << std::endl;
+        // validation: 0.0.0.0:4242
+        if (splited.size() != 2 || !this->isIpv4(splited[0]) ||
+            !this->isPort(splited[1])) {
+            std::cerr << "listen: error" << std::endl;
+            exit(1);
         }
+
         server_info.listen.ip = splited[0];
         server_info.listen.port = stringToInt(splited[1]);
 
         lexer.Skip(";");
-        return true;
+        return;
     }
 
     if (lexer.Equal("server_name")) {
         lexer.Skip("server_name");
 
+        // TODO: validation
+        // https://blog.ohgaki.net/how-to-validate-ipv4-host-names
         server_info.server_name = lexer.GetToken().str;
         lexer.Skip(TK_WORD);
 
         lexer.Skip(";");
-        return true;
+        return;
     }
 
     if (lexer.Equal("client_max_body_size")) {
         lexer.Skip("client_max_body_size");
-
-        // TODO: validate NUM
-        server_info.client_max_body_size = stringToInt(lexer.GetToken().str);
+        std::string body_size = lexer.GetToken().str;
         lexer.Skip(TK_WORD);
 
+        if (!this->isClientMaxBodySize(body_size)) {
+            std::cerr << "client_max_body_size error" << std::endl;
+            exit(1);
+        }
+        server_info.client_max_body_size = stringToInt(body_size);
+
         lexer.Skip(";");
-        return true;
+        return;
     }
 
     if (lexer.Equal("error_page")) {
@@ -107,42 +114,50 @@ bool ConfigParser::server_conf(ConfigLexer &lexer) {
         }
 
         lexer.Skip(";");
-        return true;
+        return;
     }
 
     if (lexer.Equal("location")) {
         lexer.Skip("location");
+
         std::string path = lexer.GetToken().str;
+        if (!this->isLocationPath(path)) {
+            std::cerr << "location error" << std::endl;
+            exit(1);
+        }
+
         lexer.Skip(TK_WORD);
         lexer.Skip("{");
 
         while (!lexer.Equal("}")) {
-            // TODO: pathの重複は許す？
-            bool ret = location_conf(lexer, server_info.locations_info_map[path]);
-            if (!ret) {
-                exit(1);
-            }
+            location_conf(lexer, server_info.locations_info_map[path]);
             server_info.locations_info_map[path].location_path = path;
             // TODO: validation
         }
 
         lexer.Skip("}");
-        return true;
+        return;
     }
 
-    return false;
+    exit(1);
 }
 
-bool ConfigParser::location_conf(ConfigLexer &lexer,
+void ConfigParser::location_conf(ConfigLexer &lexer,
                                  LocationInfo &location_info) {
     if (lexer.Equal("alias")) {
         lexer.Skip("alias");
 
         location_info.alias = lexer.GetToken().str;
+        // valdation
+        if (!this->isDirName(location_info.alias)) {
+            std::cerr << "alias error" << std::endl;
+            exit(1);
+        }
+
         lexer.Skip(TK_WORD);
 
         lexer.Skip(";");
-        return true;
+        return;
     }
 
     if (lexer.Equal("allow_methods")) {
@@ -154,8 +169,12 @@ bool ConfigParser::location_conf(ConfigLexer &lexer,
             lexer.Skip(TK_WORD);
         }
 
+        if (methods.size() == 0) {
+            std::cerr << "allow_methods error" << std::endl;
+            exit(1);
+        }
+
         for (size_t i = 0; i < methods.size(); i++) {
-            // TODO: refactor
             if (methods[i] != "GET" && methods[i] != "POST" &&
                 methods[i] != "DELETE") {
                 std::cerr << "allow_methods error" << std::endl;
@@ -165,7 +184,7 @@ bool ConfigParser::location_conf(ConfigLexer &lexer,
         }
 
         lexer.Skip(";");
-        return true;
+        return;
     }
 
     if (lexer.Equal("return")) {
@@ -175,7 +194,7 @@ bool ConfigParser::location_conf(ConfigLexer &lexer,
         lexer.Skip(TK_WORD);
 
         lexer.Skip(";");
-        return true;
+        return;
     }
 
     if (lexer.Equal("autoindex")) {
@@ -194,7 +213,7 @@ bool ConfigParser::location_conf(ConfigLexer &lexer,
         }
 
         lexer.Skip(";");
-        return true;
+        return;
     }
 
     if (lexer.Equal("index")) {
@@ -204,7 +223,7 @@ bool ConfigParser::location_conf(ConfigLexer &lexer,
         lexer.Skip(TK_WORD);
 
         lexer.Skip(";");
-        return true;
+        return;
     }
 
     if (lexer.Equal("allow_file_upload")) {
@@ -223,7 +242,7 @@ bool ConfigParser::location_conf(ConfigLexer &lexer,
         }
 
         lexer.Skip(";");
-        return true;
+        return;
     }
 
     if (lexer.Equal("save_folder")) {
@@ -232,10 +251,17 @@ bool ConfigParser::location_conf(ConfigLexer &lexer,
         location_info.save_folder = lexer.GetToken().str;
         lexer.Skip(TK_WORD);
 
+        // validation
+        if (!this->isDirName(location_info.save_folder)) {
+            std::cerr << "save_folder error" << std::endl;
+            exit(1);
+        }
+
         lexer.Skip(";");
-        return true;
+        return;
     }
 
+    // TODO: 仕様どうする？
     if (lexer.Equal("allow_cgi_extensions")) {
         lexer.Skip("allow_cgi_extensions");
 
@@ -245,13 +271,76 @@ bool ConfigParser::location_conf(ConfigLexer &lexer,
             lexer.Skip(TK_WORD);
         }
 
+        if (extentions.size() < 1) {
+            std::cerr << "allow_cgi_extensions error" << std::endl;
+            exit(1);
+        }
+
         for (size_t i = 0; i < extentions.size(); i++) {
             location_info.allow_cgi_extensions.push_back(extentions[i]);
         }
 
         lexer.Skip(";");
-        return true;
+        return;
     }
 
-    return false;
+    exit(1);
+}
+
+bool ConfigParser::isIpv4(const std::string &str) {
+    std::vector<std::string> splited = splitString(str, ".");
+    if (splited.size() != 4)
+        return false;
+
+    for (size_t i = 0; i < splited.size(); i++) {
+        if (hasZeroPadding(splited[i]))
+            return false;
+
+        int num = 0;
+        for (size_t j = 0; j < splited[i].size(); j++) {
+            if (!isnumber(splited[i][j]))
+                return false;
+            num = num * 10 + splited[i][j] - '0';
+            if (num > 255)
+                return false;
+        }
+    }
+
+    return true;
+}
+
+bool ConfigParser::isPort(const std::string &str) {
+    if (str.size() == 0 || hasZeroPadding(str))
+        return false;
+
+    int port = 0;
+
+    for (size_t i = 0; i < str.size(); i++) {
+        if (!isnumber(str[i]))
+            return false;
+
+        port = port * 10 + str[i] - '0';
+
+        if (port > MAX_PORT)
+            return false;
+    }
+
+    return true;
+}
+
+bool ConfigParser::isLocationPath(const std::string &str) {
+    return str.size() != 0 && str[0] == '/' && str[str.size() - 1] == '/';
+}
+
+bool ConfigParser::isClientMaxBodySize(const std::string &str) {
+    // TODO: validate NUM
+    return true;
+}
+
+bool ConfigParser::isDirName(const std::string &str) {
+    return str.size() != 0 && str[str.size() - 1] == '/';
+}
+
+bool ConfigParser::hasZeroPadding(const std::string &str) {
+    return str.size() > 1 && str[0] == '0';
 }
