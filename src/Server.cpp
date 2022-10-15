@@ -1,13 +1,13 @@
 #include "Server.hpp"
 
 Server::Server( void )
-: resp_cache_(std::map<int, HttpResponse>()),
-nfds_(0), conf_(Config()), fds_(std::vector<struct pollfd>(MAX_POLL_FDS))
+: conf_(Config())
 {
+
 }
 
 Server::~Server( void ) {
-
+    
 }
 
 int Server::Init( const std::string& conf_file ) {
@@ -86,35 +86,41 @@ void Server::listenSocket( int sock ) const {
 }
 
 void Server::registerDescriptor( int sock, short events ) {
-    if (nfds_ == MAX_POLL_FDS) {
-        std::cerr << "fds is full" << std::endl;
+    if (fds_.size() == std::numeric_limits<nfds_t>::max()) {
+        std::cerr << "fds has already full" << std::endl;
         return;
     }
 
-    fds_[nfds_].fd = sock;
-    fds_[nfds_].events = events;
-    ++nfds_;
+    try {
+        struct pollfd new_sd = (struct pollfd){sock, events, 0};
+        fds_.push_back(new_sd);
+    } catch (const std::exception& e) {
+        std::cerr << e.what() << std::endl;
+    }
 }
 
 void Server::deleteClosedDescriptor( void ) {
-    nfds_t i = 0;
+    std::vector<struct pollfd> new_fds;
 
-    while (i < nfds_) {
-        if (fds_[i].fd == CLOSED_FD) {
-            fds_[i] = fds_[nfds_ - 1];
-            --nfds_;
-        } else {
-            ++i;
+    std::vector<struct pollfd>::size_type i;
+    for (i = 0; i < fds_.size(); ++i) {
+        if (fds_[i].fd != CLOSED_FD) {
+            try {
+                new_fds.push_back(fds_[i]);
+            } catch (const std::exception& e) {
+                std::cerr << e.what() << std::endl;
+            }
         }
     }
+    fds_ = new_fds;
 }
 
 std::vector<Event*> Server::waitForEvents( void ) {
     std::vector<Event*> events;
 
     std::cout << "wait Events..." << std::endl;
-    std::cout << "nfds: " << nfds_ << std::endl;
-    int rc = poll(&fds_[0], nfds_, TIMEOUT);
+    std::cout << "nfds: " << fds_.size() << std::endl;
+    int rc = poll(&fds_[0], fds_.size(), TIMEOUT);
     if (rc == -1) {
         // error
         perror("poll");
@@ -134,7 +140,8 @@ std::vector<Event*> Server::getRaisedEvents( void ) {
     std::vector<Event*> events;
     short revents;
 
-    for (nfds_t i = 0; i < nfds_; ++i) {
+    std::vector<struct pollfd>::size_type i;
+    for (i = 0; i < fds_.size(); ++i) {
         revents = fds_[i].revents;
         std::cout << "i: " << i << std::endl;
         std::cout << "revents: " << revents << std::endl;

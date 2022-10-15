@@ -17,6 +17,7 @@
 #include <vector>
 #include <set>
 #include <fstream>
+#include <limits>
 #include "./config/Config.hpp"
 #include "./events/NewConnectionEvent.hpp"
 #include "./events/RecieveRequestEvent.hpp"
@@ -69,7 +70,6 @@ class Server {
         std::map<int, HttpResponse> resp_cache_;
         // struct pollfd fds_[MAX_POLL_FDS];
         std::vector<struct pollfd> fds_;
-        nfds_t nfds_;
         Config conf_;
 
         std::map< int, std::pair<std::string, int> > client_sd_to_addr_;
