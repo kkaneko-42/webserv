@@ -33,8 +33,11 @@ void CgiExecutor::init( const HttpRequest& req ) {
         if (pos == std::string::npos) {
             continue;
         }
-        // 最後の文字：.py
-        // 後ろにスラッシュつく：.py/
+        if (req_target[pos + allow.size()] != '\0'
+            && req_target[pos + allow.size()] != '/')
+        {
+            continue;
+        }
         if (min_pos > pos) {
             min_pos = pos;
             extention = allow;

@@ -80,5 +80,12 @@ class CgiTest(unittest.TestCase):
             r = func(URL + "/cgi/fail.py")
             self.assertEqual(400, r.status_code)
 
+    def test_forbidden_extension(self):
+        r = requests.get(URL + "/cgi/print_env.py.go")
+        self.assertEqual(200, r.status_code)
+        with open(CGI_DIR + "/print_env.py.go") as f:
+            expected = f.read()
+            self.assertEqual(expected, r.text)
+
 if __name__ == "__main__":
     unittest.main()
