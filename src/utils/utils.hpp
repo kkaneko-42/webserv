@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <stdexcept>
 #include "trimStringIter.hpp"
 
 int loadFile( const std::string& path, std::string& content );
@@ -16,5 +17,6 @@ std::string sizeToString( size_t n );
 int stringToInt( const std::string& str );
 size_t stringToSize( const std::string& str );
 bool hasSpace( const std::string& str );
+bool stringIsNumber( const std::string& str );
 
 #endif

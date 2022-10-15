@@ -16,7 +16,7 @@ int main( int ac, char** av ) {
     }
 
     // TODO: SIGPIPEのignore
-    // signal(SIGPIPE, SIG_IGN);
+    signal(SIGPIPE, SIG_IGN);
     if (server.Run()) {
         return (1);
     }

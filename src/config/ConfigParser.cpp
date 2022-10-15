@@ -68,8 +68,6 @@ void ConfigParser::server_conf(ConfigLexer &lexer) {
     if (lexer.Equal("server_name")) {
         lexer.Skip("server_name");
 
-        // TODO: validation
-        // https://blog.ohgaki.net/how-to-validate-ipv4-host-names
         server_info.server_name = lexer.GetToken().str;
         lexer.Skip(TK_WORD);
 
@@ -109,8 +107,12 @@ void ConfigParser::server_conf(ConfigLexer &lexer) {
         std::string page = *(error_page_args.rbegin());
 
         for (size_t i = 0; i < error_page_args.size() - 1; i++) {
-            // TODO: validate NUM
-            int status = stringToInt(error_page_args[i]);
+            std::string status_str = error_page_args[i];
+            if (!isHttpStatus(status_str)) {
+                std::cerr << "error_page error" << std::endl;
+                exit(1);
+            }
+            int status = stringToSize(status_str);
             server_info.error_pages_map[status] = page;
         }
 
@@ -133,7 +135,6 @@ void ConfigParser::server_conf(ConfigLexer &lexer) {
         while (!lexer.Equal("}")) {
             location_conf(lexer, server_info.locations_info_map[path]);
             server_info.locations_info_map[path].location_path = path;
-            // TODO: validation
         }
 
         lexer.Skip("}");
@@ -262,7 +263,6 @@ void ConfigParser::location_conf(ConfigLexer &lexer,
         return;
     }
 
-    // TODO: 仕様どうする？
     if (lexer.Equal("allow_cgi_extensions")) {
         lexer.Skip("allow_cgi_extensions");
 
@@ -334,8 +334,18 @@ bool ConfigParser::isLocationPath(const std::string &str) {
 }
 
 bool ConfigParser::isClientMaxBodySize(const std::string &str) {
-    // TODO: validate NUM
-    return true;
+    if (!stringIsNumber(str)) {
+        return false;
+    }
+
+    size_t n;
+    try {
+        n = stringToSize(str);
+    } catch (const std::overflow_error& e) {
+        return false;
+    }
+
+    return  n <= DEFAULT_CLIENT_MAX_BODY_SIZE;
 }
 
 bool ConfigParser::isDirName(const std::string &str) {
@@ -344,4 +354,11 @@ bool ConfigParser::isDirName(const std::string &str) {
 
 bool ConfigParser::hasZeroPadding(const std::string &str) {
     return str.size() > 1 && str[0] == '0';
+}
+
+bool ConfigParser::isHttpStatus(const std::string &str) {
+    if (str.size() != 3) {
+        return false;
+    }
+    return (stringIsNumber(str));
 }
