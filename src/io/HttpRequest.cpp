@@ -60,9 +60,6 @@ int HttpRequest::parseTop( const std::string& top_row ) {
 
     // method
     method_ = generateHttpMethod(tokens[0]);
-    if (method_ == NULL) {
-        return (1);
-    }
 
     // path
     std::string::size_type pos = tokens[1].find("?");
@@ -75,7 +72,7 @@ int HttpRequest::parseTop( const std::string& top_row ) {
 
     // version
     version_ = tokens[2];
-    
+
     return (0);
 }
 // foo, , bar

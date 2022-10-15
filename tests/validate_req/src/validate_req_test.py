@@ -7,7 +7,6 @@ TEST_CASES_DIR="./cases/"
 
 def req(raw_req):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.settimeout(5)
     sock.connect(("127.0.0.1", 4242))
     sock.send(raw_req.encode())
     rcv_data = sock.recv(1024)
@@ -34,7 +33,7 @@ def load_test_cases():
 class ReqValidationTest(unittest.TestCase):
     def test_all(self):
         cases = load_test_cases()
-
+        cases = sorted(cases, key=lambda x: x["path"])
         for case in cases:
             path = case["path"]
             status = case["status"]

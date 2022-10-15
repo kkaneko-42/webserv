@@ -1,6 +1,7 @@
 #include "../methods/GET.hpp"
 #include "../methods/DELETE.hpp"
 #include "../methods/POST.hpp"
+#include "../methods/InvalidMethod.hpp"
 
 HttpMethod* generateHttpMethod( const std::string& name ) {
     HttpMethod* method;
@@ -12,7 +13,7 @@ HttpMethod* generateHttpMethod( const std::string& name ) {
     } else if (name == "POST") {
         method = new POST();
     } else {
-        method = NULL;
+        method = new InvalidMethod();
     }
 
     return (method);

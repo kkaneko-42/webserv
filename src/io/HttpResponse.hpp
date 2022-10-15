@@ -25,6 +25,7 @@ class HttpResponse {
             PAYLOAD_TOO_LARGE = 413,
 
             INTERNAL_SERVER_ERROR = 500,
+            NOT_IMPLEMENTED = 501,
         };
 
         HttpResponse( Status status = OK );

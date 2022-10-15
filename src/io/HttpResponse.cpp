@@ -63,6 +63,9 @@ std::string HttpResponse::statusMsg( Status status ) {
         case INTERNAL_SERVER_ERROR:
             msg = "Internal Server Error";
             break;
+        case NOT_IMPLEMENTED:
+            msg = "Not Implemented";
+            break;
         
         default:
             msg = "Invalid Status";

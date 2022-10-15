@@ -15,6 +15,8 @@ cp ../../webserv ./;
 if [ "${OS}" = "Linux" ]; then
     valgrind --log-file="valgrind.log" --leak-check=yes ./webserv > exe.log 2>&1 &
 else
+    echo "Only Linux is supported..."
+    exit 1
     ./webserv > /dev/null 2>&1 &
 fi
 
@@ -38,10 +40,12 @@ if [ "${OS}" = "Linux" ]; then
     kill ${pid};
     
     # wait valgrind exit
+    echo -n "waiting for valgrind exit";
     while [ `ps | grep 'memcheck' | awk '{print $1}'` ]; do
-        echo "waiting for valgrind exit...";
-        sleep 0.1;
+        echo -n "."
+        sleep 0.2;
     done
+    echo
 
     cat "valgrind.log" | grep ERROR | grep -v " 0 errors " > /dev/null
     result=$?
@@ -51,7 +55,7 @@ if [ "${OS}" = "Linux" ]; then
         echo -e "valgrind: ${GREEN}OK${NC}"
     fi
 else
-    echo TODO
+    echo "todo for MacOS"
 
     pid=`ps | grep 'memcheck' | grep -v grep | awk '{print $1}'`;
     kill ${pid};
