@@ -58,11 +58,22 @@ int HttpRequest::parseTop( const std::string& top_row ) {
         return (1);
     }
 
+    // method
     method_ = generateHttpMethod(tokens[0]);
     if (method_ == NULL) {
         return (1);
     }
-    path_ = tokens[1];
+
+    // path
+    std::string::size_type pos = tokens[1].find("?");
+    if (pos == std::string::npos) {
+        path_ = tokens[1];
+    } else {
+        path_ = tokens[1].substr(0, pos);
+        query_string_ = tokens[1].substr(pos + 1);
+    }
+
+    // version
     version_ = tokens[2];
     
     return (0);
@@ -172,7 +183,7 @@ void HttpRequest::printRequest( void ) const {
     std::cout << body_;
 }
 
-std::string HttpRequest::getPath( void ) const {
+std::string HttpRequest::getResolvedPath( void ) const {
     assert(path_.size() >= location_info_.location_path.size());
     std::string full_path = path_.substr(location_info_.location_path.size());
     const std::string alias = location_info_.alias;

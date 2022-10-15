@@ -2,9 +2,9 @@
 
 CgiExecutor::CgiExecutor( void )
 : exec_path_(""), path_info_(""),
-query_string_(""), is_executable_(false) {}
+is_executable_(false) {}
 
-// localhost:4242/hoge/a.py/b.py
+// localhost:4242/hoge/a.py/hoge.py
 // location /hoge/ {
 //     alias ./html/fuga
 // }
@@ -12,17 +12,17 @@ query_string_(""), is_executable_(false) {}
 //     alias ./html;
 // }
 
-// getPath() => ./html/a.py/b.py?value=42
-// getRawPath() => /hoge/a.py/
+// getResolvedPath() => ./html/a.py/hoge.py?value=42
+// getResolvedPath() => /hoge/a.py/
 
 // path_ == ./html/a.py
-// path_info == /b.py (EXPORT PATH_INFO)
+// path_info == /hoge.py (EXPORT PATH_INFO)
 // query_string == value=42 (EXPORT QUERY_STRING)
 // is_executable == true
 
 void CgiExecutor::init( const HttpRequest& req ) {
     const LocationInfo location = req.getLocationInfo();
-    std::string req_target = req.getRawPath().substr(location.location_path.size());
+    std::string req_target = req.getPath().substr(location.location_path.size());
 
     std::string::size_type min_pos = std::numeric_limits<std::string::size_type>::max();
     std::string extention;
@@ -33,6 +33,8 @@ void CgiExecutor::init( const HttpRequest& req ) {
         if (pos == std::string::npos) {
             continue;
         }
+        // 最後の文字：.py
+        // 後ろにスラッシュつく：.py/
         if (min_pos > pos) {
             min_pos = pos;
             extention = allow;
@@ -40,33 +42,21 @@ void CgiExecutor::init( const HttpRequest& req ) {
     }
     if (min_pos == std::numeric_limits<std::string::size_type>::max()) {
         is_executable_ = false;
-        debugCgiExecutor();
+        debugCgiExecutor(req);
         return;
     }
     is_executable_ = true;
 
-    // /a.py/b.py?value=42
-
+    // /a.py/hoge.py
     // /a.py
     std::string before = req_target.substr(0, min_pos + extention.size());
-    // /b.py?value=42
-    std::string after = req_target.substr(before.size());
+    // /hoge.py
+    path_info_ = req_target.substr(before.size());;
 
     // exec_path_ == ./html/a.py
     exec_path_ = location.alias + before;
 
-    // path_info_ == /b.py (EXPORT as PATH_INFO)
-    // query_string_ == value=42 (EXPORT as QUERY_STRING)
-    // NOTE: validate query string
-    std::string::size_type query_pos = after.find("?");
-    if (query_pos == std::string::npos) {
-        path_info_ = after;
-    } else {
-        path_info_ = after.substr(0, query_pos);
-        query_string_  = after.substr(query_pos + 1);
-    }
-
-    debugCgiExecutor();
+    debugCgiExecutor(req);
 }
 
 HttpResponse CgiExecutor::execute( const HttpRequest& req ) const {
@@ -82,10 +72,6 @@ HttpResponse CgiExecutor::execute( const HttpRequest& req ) const {
         );
     }
 
-    // export env
-    setenv("PATH_INFO", path_info_.c_str(), 1);
-    setenv("QUERY_STRING", query_string_.c_str(), 1);
-
     pid_t pid = fork();
     if (pid < 0) {
         perror("fork");
@@ -94,6 +80,9 @@ HttpResponse CgiExecutor::execute( const HttpRequest& req ) const {
             host_info
         );
     } else if (pid == 0) {
+        // export env
+        setenv("PATH_INFO", path_info_.c_str(), 1);
+        setenv("QUERY_STRING", req.getQueryString().c_str(), 1);
         // CGI
         close(fd_cgi_to_server[0]);
         close(fd_server_to_cgi[1]);
@@ -156,11 +145,11 @@ HttpResponse CgiExecutor::execute( const HttpRequest& req ) const {
     return HttpResponse::unmarshal(resp_str);
 }
 
-void CgiExecutor::debugCgiExecutor( void ) {
+void CgiExecutor::debugCgiExecutor( const HttpRequest& req ) const {
     std::cout << "====== CGI Executor Infomation ======" << std::endl;
     std::cout << "exec_path: " << exec_path_ << std::endl;
     std::cout << "path_info: " << path_info_ << std::endl;
-    std::cout << "query_string: " << query_string_ << std::endl;
+    std::cout << "query_string: " << req.getQueryString() << std::endl;
     std::cout << "is_executable: " << (is_executable_ ? "true" : "false") << std::endl;
     std::cout << "=====================================" << std::endl;
 }

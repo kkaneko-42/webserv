@@ -112,12 +112,12 @@ HttpResponse HttpResponse::createErrorResponse( Status status ) {
 }
 
 HttpResponse HttpResponse::createDirListingResponse( const HttpRequest& req ) {
-    std::vector<std::string> file_list = getFileList(req.getPath());
+    std::vector<std::string> file_list = getFileList(req.getResolvedPath());
     std::string res_body;
 
     res_body += "<!DOCTYPE HTML>\r\n";
     res_body += "<html><head>\r\n";
-    res_body += "<h1>Indexof " + req.getRawPath() + "</h1>\r\n";
+    res_body += "<h1>Indexof " + req.getPath() + "</h1>\r\n";
     res_body += "</head><hr><body>\r\n";
 
     for (size_t i = 0; i < file_list.size(); ++i) {

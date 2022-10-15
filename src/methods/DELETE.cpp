@@ -12,7 +12,7 @@ HttpResponse DELETE::execute( const HttpRequest& req ) {
         );
     }
 
-    if (unlink(req.getPath().c_str()) < 0) {
+    if (unlink(req.getResolvedPath().c_str()) < 0) {
         // TODO: support multiple errno
         return HttpResponse::createErrorResponse(
             HttpResponse::NOT_FOUND,

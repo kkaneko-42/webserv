@@ -41,7 +41,7 @@ class ReqValidationTest(unittest.TestCase):
             with open(path) as f:
                 print(f"Testing {path}...")
                 raw_req = f.read()
-                resp = req(raw_req)
+                resp = req(raw_req.replace("\r\n", "\n").replace("\n", "\r\n"))
                 self.assertEqual(status, get_status(str(resp)))
 
 if __name__ == "__main__":

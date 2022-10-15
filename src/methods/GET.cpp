@@ -5,7 +5,7 @@
 HttpResponse GET::execute( const HttpRequest& req ) {
     const ServerInfo host_info = req.getHostInfo();
     const LocationInfo location = req.getLocationInfo();
-    std::string path = req.getPath();
+    std::string path = req.getResolvedPath();
 
     if (!isMethodAllowed("GET", location)) {
         return HttpResponse::createErrorResponse(

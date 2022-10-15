@@ -24,8 +24,9 @@ class HttpRequest {
 
         HttpRequest( void );
         ~HttpRequest( void );
-        std::string getPath( void ) const;
-        std::string getRawPath( void ) const { return path_; }
+        std::string getPath( void ) const { return path_; }
+        std::string getResolvedPath( void ) const;
+        std::string getQueryString( void ) const { return query_string_; }
         std::string getUploadPath( void ) const;
         std::string getHostName( bool flag_resolve = false ) const;
         ServerInfo getHostInfo( void ) const { return host_info_; }
@@ -38,11 +39,12 @@ class HttpRequest {
         int hostMatching(
             const std::vector<ServerInfo>& servers_info,
             std::pair< std::string, int > listen_addr
-            );
+        );
         int locationMatching( void );
         void printRequest( void ) const;
 
     private:
+        int parseQueryString( void );
         int parseTop( const std::string& top_row );
         int parseHeader( const std::vector<std::string>& headers );
         int validateHeaderLine( const std::string& header_line ) const;
@@ -53,6 +55,7 @@ class HttpRequest {
         ServerInfo host_info_;
         LocationInfo location_info_;
         std::string path_; // /hoge
+        std::string query_string_; // value=42
         std::string version_; // HTTP/1.1
         Headers headers_;
         std::string body_;

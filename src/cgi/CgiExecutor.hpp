@@ -25,12 +25,11 @@ class CgiExecutor {
         void init( const HttpRequest& req );
         HttpResponse execute( const HttpRequest& req ) const;
         bool isExecutable( void ) const { return is_executable_; }
-        void debugCgiExecutor( void );
+        void debugCgiExecutor( const HttpRequest& req ) const;
 
     private:
         std::string exec_path_;
         std::string path_info_;
-        std::string query_string_;
         bool is_executable_;
 };
 
