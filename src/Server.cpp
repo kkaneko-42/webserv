@@ -2,9 +2,8 @@
 
 Server::Server( void )
 : resp_cache_(std::map<int, HttpResponse>()),
-nfds_(0), conf_(Config())
+nfds_(0), conf_(Config()), fds_(std::vector<struct pollfd>(MAX_POLL_FDS))
 {
-    memset(fds_, 0, sizeof(fds_));
 }
 
 Server::~Server( void ) {
@@ -115,7 +114,7 @@ std::vector<Event*> Server::waitForEvents( void ) {
 
     std::cout << "wait Events..." << std::endl;
     std::cout << "nfds: " << nfds_ << std::endl;
-    int rc = poll(fds_, nfds_, TIMEOUT);
+    int rc = poll(&fds_[0], nfds_, TIMEOUT);
     if (rc == -1) {
         // error
         perror("poll");

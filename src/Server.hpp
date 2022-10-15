@@ -67,7 +67,8 @@ class Server {
 
     private:
         std::map<int, HttpResponse> resp_cache_;
-        struct pollfd fds_[MAX_POLL_FDS];
+        // struct pollfd fds_[MAX_POLL_FDS];
+        std::vector<struct pollfd> fds_;
         nfds_t nfds_;
         Config conf_;
 
