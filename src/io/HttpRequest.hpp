@@ -11,7 +11,6 @@ class HttpMethod;
 
 class HttpRequest {
     public:
-        // TODO: header valuesはenum等で状態として管理。stringのままは使いづらそう
         struct Headers {
             std::vector<std::string>    accept;
             std::string                 accept_language; // 複数取れる？

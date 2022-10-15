@@ -41,7 +41,6 @@ HttpResponse GET::execute( const HttpRequest& req ) {
     // TODO: set accurate header
     resp.addHeader("Content-Length", sizeToString(content.size()));
     resp.addHeader("Connection", "close");
-    resp.addHeader("Content-Type", "text/html");
     std::cout << resp.marshal() << std::endl;
 
     return resp;

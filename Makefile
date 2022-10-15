@@ -11,6 +11,8 @@ DEPS = $(SRCS:src/%.cpp=obj/%.d)
 OBJS_DIR := $(sort $(dir $(OBJS)))
 OBJS_DIR := $(addsuffix .keep, $(OBJS_DIR))
 
+TEST_DIR := ./tests
+
 all: $(NAME)
 
 -include $(DEPS)
@@ -33,5 +35,8 @@ fclean: clean
 	rm -f $(NAME)
 
 re: fclean all
+
+test:
+	cd $(TEST_DIR) && ./run_all.sh
 
 .PHONY: all clean fclean re
