@@ -124,11 +124,9 @@ std::vector<Event*> Server::waitForEvents( void ) {
     if (rc == -1) {
         // error
         perror("poll");
-        exit(EXIT_FAILURE);
     } else if (rc == 0) {
         // TIMEOUT
         std::cout << "TIMEOUT" << std::endl;
-        exit(EXIT_SUCCESS);
     } else {
         events = this->getRaisedEvents();
     }
