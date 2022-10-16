@@ -102,13 +102,12 @@ HttpResponse HttpResponse::createErrorResponse( Status status, const ServerInfo&
 
 HttpResponse HttpResponse::createErrorResponse( Status status ) {
     const std::string default_page_content =
-    "<!DOCTYPE HTML>\r\n"
-    "<html><head>\r\n"
-    "<title>An error occurred.</title>\r\n"
-    "</head><body>\r\n"
-    "<h1>" + statusMsg(status) + "</h1>\r\n"
-    "<p>The requested URL was not found on this server.</p>\r\n"
-    "</body></html>\r\n";
+"<!DOCTYPE HTML>\n"
+"<html><head>\n"
+"<title>An error occurred.</title>\n"
+"</head><body>\n"
+"<p>An error occurred, but erorr page not set.</p>\n"
+"</body></html>\n";
 
     HttpResponse resp;
     resp.setStatus(status);
