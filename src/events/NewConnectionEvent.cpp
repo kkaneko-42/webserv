@@ -16,9 +16,8 @@ int NewConnectionEvent::handler( void ) {
                 break;
             } else {
                 // error
-                // TODO: 失敗時、どういう挙動？
                 perror("accept");
-                exit(EXIT_FAILURE);
+                break;
             }
         }
 
