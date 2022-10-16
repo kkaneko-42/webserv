@@ -1,7 +1,7 @@
 for dir in `ls -d */`; do
-    if [ "$dir" = "conf/" ]; then
+    if [ "$dir" = "conf/" ] || [ "$dir" = "server_name/" ]; then
         true
-    else 
+    else
         cp ./run.sh ${dir}
     fi
 
