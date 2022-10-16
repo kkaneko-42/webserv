@@ -150,7 +150,11 @@ std::vector<Event*> Server::getRaisedEvents( void ) {
 
         if ((revents & (POLLIN | POLLOUT)) == 0) {
             perror("invalid event");
-            exit(EXIT_FAILURE);
+            if (!isListeningDescriptor(fds_[i].fd)) {
+                close(fds_[i].fd);
+                fds_[i].fd = -1;
+            }
+            continue;
         }
 
         if (this->isListeningDescriptor(fds_[i].fd)) {
