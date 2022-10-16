@@ -84,7 +84,7 @@ void ConfigParser::server_conf(ConfigLexer &lexer) {
             std::cerr << "client_max_body_size error" << std::endl;
             exit(1);
         }
-        server_info.client_max_body_size = stringToInt(body_size);
+        server_info.client_max_body_size = stringToSize(body_size);
 
         lexer.Skip(";");
         return;
@@ -99,21 +99,25 @@ void ConfigParser::server_conf(ConfigLexer &lexer) {
             lexer.Skip(TK_WORD);
         }
 
-        if (error_page_args.size() < 2) {
+        if (error_page_args.size() == 0) {
             std::cerr << "error_page error" << std::endl;
             exit(1);
         }
 
         std::string page = *(error_page_args.rbegin());
 
-        for (size_t i = 0; i < error_page_args.size() - 1; i++) {
-            std::string status_str = error_page_args[i];
-            if (!isHttpStatus(status_str)) {
-                std::cerr << "error_page error" << std::endl;
-                exit(1);
+        if (error_page_args.size() == 1) {
+            server_info.error_pages_map[-1] = page;
+        } else {
+            for (size_t i = 0; i < error_page_args.size() - 1; i++) {
+                std::string status_str = error_page_args[i];
+                if (!isHttpStatus(status_str)) {
+                    std::cerr << "error_page error" << std::endl;
+                    exit(1);
+                }
+                int status = stringToSize(status_str);
+                server_info.error_pages_map[status] = page;
             }
-            int status = stringToSize(status_str);
-            server_info.error_pages_map[status] = page;
         }
 
         lexer.Skip(";");

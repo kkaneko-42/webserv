@@ -78,11 +78,15 @@ std::string HttpResponse::statusMsg( Status status ) {
 HttpResponse HttpResponse::createErrorResponse( Status status, const ServerInfo& host_info ) {
     HttpResponse resp;
 
-    if (host_info.error_pages_map.count(status) == 0) {
+    if (host_info.error_pages_map.count(status) == 0
+        && host_info.error_pages_map.count(-1) == 0)
+    {
         return (HttpResponse::createErrorResponse(status));
     }
 
-    const std::string page_path = host_info.error_pages_map.at(status);
+    std::string page_path = host_info.error_pages_map.count(status) > 0
+                            ? host_info.error_pages_map.at(status)
+                            : host_info.error_pages_map.at(-1);
     std::string page_content;
 
     if (loadFile(page_path, page_content)) {

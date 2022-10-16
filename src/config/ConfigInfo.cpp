@@ -93,7 +93,7 @@ void debugServerInfo(const ServerInfo &info, int indent_level) {
 void debugConfigInfo(const ConfigInfo &info, int indent_level) {
     // std::cout << indent(indent_level) << "config: {" << std::endl;
 
-    for (int i = 0; i < info.servers_info.size(); i++) {
+    for (size_t i = 0; i < info.servers_info.size(); i++) {
         debugServerInfo(info.servers_info[i], indent_level);
     }
 
