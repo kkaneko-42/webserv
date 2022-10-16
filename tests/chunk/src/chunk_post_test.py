@@ -19,7 +19,8 @@ def create_chunked_body(arr):
 class ChunkPostTest(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         super(ChunkPostTest, self).__init__(*args, **kwargs)
-        shutil.rmtree(UPLOAD_DIR)
+        if os.path.exists(UPLOAD_DIR):
+            shutil.rmtree(UPLOAD_DIR)
         os.mkdir(UPLOAD_DIR)
 
     def test_chunk_post(self):
