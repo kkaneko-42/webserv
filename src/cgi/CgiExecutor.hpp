@@ -6,7 +6,7 @@
 #include "../io/HttpResponse.hpp"
 #include <unistd.h>
 #include <cstdlib>
-#include <stdio.h>
+#include <cstdio>
 #include <cerrno>
 #include <limits>
 #include <sys/types.h>

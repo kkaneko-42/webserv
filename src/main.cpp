@@ -1,5 +1,5 @@
 #include "Server.hpp"
-#include <signal.h>
+#include <csignal>
 
 int main( int ac, char** av ) {
     std::string conf_file;

@@ -1,6 +1,6 @@
 #include "DELETE.hpp"
 #include <unistd.h>
-#include <errno.h>
+#include <cerrno>
 
 HttpResponse DELETE::execute( const HttpRequest& req ) {
     const ServerInfo host_info = req.getHostInfo();
