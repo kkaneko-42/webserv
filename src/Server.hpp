@@ -23,6 +23,8 @@
 #include "./events/RecieveRequestEvent.hpp"
 #include "./events/SendResponseEvent.hpp"
 
+#define USAGE "usage: ./webserv [configuration file]"
+
 #define SYSCALL_ERROR( name ) \
     std::string str = name;\
     throw std::runtime_error(str + ": " + strerror(errno));
