@@ -1,4 +1,5 @@
 #include "CgiExecutor.hpp"
+#include "signal.h"
 
 const unsigned int CgiExecutor::kTimeout = 5;
 
