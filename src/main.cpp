@@ -15,7 +15,12 @@ int main( int ac, char** av ) {
         return (1);
     }
 
-    signal(SIGPIPE, SIG_IGN);
+    if (signal(SIGPIPE, SIG_IGN) == SIG_ERR)
+    {
+        perror("signal");
+        return (1);
+    }
+
     if (server.Run()) {
         return (1);
     }

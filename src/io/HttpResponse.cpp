@@ -66,6 +66,9 @@ std::string HttpResponse::statusMsg( Status status ) {
         case NOT_IMPLEMENTED:
             msg = "Not Implemented";
             break;
+        case GATEWAY_TIMEOUT:
+            msg = "Gateway Timeout";
+            break;
         
         default:
             msg = "Invalid Status";

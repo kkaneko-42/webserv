@@ -1,5 +1,10 @@
 #include "CgiExecutor.hpp"
 
+const unsigned int CgiExecutor::kTimeout = 5;
+
+volatile pid_t CgiExecutor::cgi_pid_ = 0;
+bool CgiExecutor::isTimeout_ = false;
+
 CgiExecutor::CgiExecutor( void )
 : exec_path_(""), path_info_(""),
 is_executable_(false) {}
@@ -21,6 +26,7 @@ is_executable_(false) {}
 // is_executable == true
 
 void CgiExecutor::init( const HttpRequest& req ) {
+    signal(SIGALRM, CgiExecutor::timeoutHandler);
     const LocationInfo location = req.getLocationInfo();
     std::string req_target = req.getPath().substr(location.location_path.size());
 
@@ -63,6 +69,7 @@ void CgiExecutor::init( const HttpRequest& req ) {
 }
 
 HttpResponse CgiExecutor::execute( const HttpRequest& req ) const {
+    CgiExecutor::isTimeout_ = false;
     const ServerInfo host_info = req.getHostInfo();
     int fd_cgi_to_server[2];
     int fd_server_to_cgi[2];
@@ -76,6 +83,7 @@ HttpResponse CgiExecutor::execute( const HttpRequest& req ) const {
     }
 
     pid_t pid = fork();
+    cgi_pid_ = pid;
     if (pid < 0) {
         perror("fork");
         return HttpResponse::createErrorResponse(
@@ -111,11 +119,17 @@ HttpResponse CgiExecutor::execute( const HttpRequest& req ) const {
     write(fd_server_to_cgi[1], body.c_str(), body.size());
     close(fd_server_to_cgi[1]);
 
+    alarm(kTimeout);
     int status_ptr;
     waitpid(pid, &status_ptr, 0);
 
     int status = WEXITSTATUS(status_ptr);
-    if (status != 0) {
+    if (CgiExecutor::isTimeout_) {
+        return HttpResponse::createErrorResponse(
+            HttpResponse::GATEWAY_TIMEOUT,
+            host_info
+        );
+    } else if (status != 0) {
         return HttpResponse::createErrorResponse(
             HttpResponse::BAD_REQUEST,
             host_info
@@ -155,4 +169,11 @@ void CgiExecutor::debugCgiExecutor( const HttpRequest& req ) const {
     std::cout << "query_string: " << req.getQueryString() << std::endl;
     std::cout << "is_executable: " << (is_executable_ ? "true" : "false") << std::endl;
     std::cout << "=====================================" << std::endl;
+}
+
+void CgiExecutor::timeoutHandler(int pid)
+{
+    (void)pid;
+    kill(CgiExecutor::cgi_pid_, SIGKILL);
+    CgiExecutor::isTimeout_ = true;
 }

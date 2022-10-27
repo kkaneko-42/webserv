@@ -26,6 +26,7 @@ class HttpResponse {
 
             INTERNAL_SERVER_ERROR = 500,
             NOT_IMPLEMENTED = 501,
+            GATEWAY_TIMEOUT = 504,
         };
 
         HttpResponse( Status status = OK );
