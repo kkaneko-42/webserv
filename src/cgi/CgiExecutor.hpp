@@ -21,6 +21,8 @@
 
 class CgiExecutor {
     public:
+        static const unsigned int kTimeout; // seconds
+        
         CgiExecutor( void );
         void init( const HttpRequest& req );
         HttpResponse execute( const HttpRequest& req ) const;
@@ -28,6 +30,10 @@ class CgiExecutor {
         void debugCgiExecutor( const HttpRequest& req ) const;
 
     private:
+        static void timeoutHandler(int pid);
+        static volatile pid_t cgi_pid_;
+        static bool isTimeout_;
+
         std::string exec_path_;
         std::string path_info_;
         bool is_executable_;

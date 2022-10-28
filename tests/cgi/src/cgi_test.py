@@ -87,5 +87,15 @@ class CgiTest(unittest.TestCase):
             expected = f.read()
             self.assertEqual(expected, r.text)
 
+    def test_infinite_cgi(self):
+        for func in METHODS:
+            r = func(URL + "/cgi/infinite.py")
+            self.assertEqual(504, r.status_code)
+
+    def test_too_big_response(self):
+        for func in METHODS:
+            r = func(URL + "/cgi/generate_big.py")
+            self.assertEqual(504, r.status_code)
+
 if __name__ == "__main__":
     unittest.main()
